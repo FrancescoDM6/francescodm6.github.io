@@ -1,0 +1,195 @@
+---
+import Layout from '../components/Layout.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+
+const allProjects = await getCollection('projects');
+const sortedProjects = allProjects.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+// Group projects by tag for filtering
+const tagGroups = {
+  ai: allProjects.filter(p => p.data.tags.includes('ai')),
+  gaming: allProjects.filter(p => p.data.tags.includes('gaming')),
+  research: allProjects.filter(p => p.data.tags.includes('research')),
+  'coding-misc': allProjects.filter(p => p.data.tags.includes('coding-misc')),
+  'web-dev': allProjects.filter(p => p.data.tags.includes('web-dev'))
+};
+---
+
+<Layout title="All Projects - Portfolio" description="Complete collection of all portfolio projects">
+  <div class="page-header">
+    <h1>📁 All Projects</h1>
+    <p class="page-description">
+      Complete collection of all projects across AI, gaming, research, and development.
+    </p>
+    <div class="page-stats">
+      <span class="stat">{allProjects.length} total projects</span>
+    </div>
+  </div>
+
+  <!-- Filter Options -->
+  <div class="filter-section">
+    <h3>Filter by Category:</h3>
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">All ({allProjects.length})</button>
+      <button class="filter-btn" data-filter="ai">AI ({tagGroups.ai.length})</button>
+      <button class="filter-btn" data-filter="gaming">Gaming ({tagGroups.gaming.length})</button>
+      <button class="filter-btn" data-filter="research">Research ({tagGroups.research.length})</button>
+      <button class="filter-btn" data-filter="coding-misc">Coding Misc ({tagGroups['coding-misc'].length})</button>
+      <button class="filter-btn" data-filter="web-dev">Web Dev ({tagGroups['web-dev'].length})</button>
+    </div>
+  </div>
+
+  <div class="projects-grid" id="projects-container">
+    {sortedProjects.map((project) => (
+      <div class="project-item" data-tags={project.data.tags.join(',')}>
+        <ProjectCard
+          title={project.data.title}
+          description={project.data.description}
+          tags={project.data.tags}
+          date={project.data.date}
+          status={project.data.status}
+          liveUrl={project.data.liveUrl}
+          downloadUrl={project.data.downloadUrl}
+          githubUrl={project.data.githubUrl}
+          images={project.data.images}
+          technologies={project.data.technologies}
+          embedType={project.data.embedType}
+          slug={project.slug}
+          featured={project.data.featured}
+        />
+      </div>
+    ))}
+  </div>
+</Layout>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+  
+  .page-description {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto 1rem auto;
+    line-height: 1.6;
+  }
+  
+  .page-stats {
+    margin-top: 1rem;
+  }
+  
+  .stat {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+  
+  .filter-section {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  
+  .filter-section h3 {
+    margin-bottom: 1rem;
+    color: #374151;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+  }
+  
+  .filter-btn {
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    color: #374151;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+  }
+  
+  .filter-btn:hover {
+    background: #e5e7eb;
+  }
+  
+  .filter-btn.active {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+  
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+  }
+  
+  .project-item {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  
+  .project-item.hidden {
+    display: none;
+  }
+  
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .projects-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .filter-buttons {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+
+<script>
+  // Client-side filtering functionality
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  const projectItems = document.querySelectorAll('.project-item');
+  
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const filter = (button as HTMLElement).dataset.filter || 'all';
+      
+      // Update active button
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      
+      // Filter projects
+      projectItems.forEach(item => {
+        const itemTags = (item as HTMLElement).dataset.tags || '';
+        const tags = itemTags.split(',');
+        
+        if (filter === 'all' || tags.includes(filter)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+</script>

@@ -1,0 +1,408 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+// Function to get the correct URL for each tag
+function getTagUrl(tag: string) {
+    const tagMap: Record<string, string> = {
+        'ai': '/ai',
+        'gaming': '/gaming',
+        'research': '/research',
+        'coding-misc': '/coding-misc',
+        'web-dev': '/web-dev'
+    };
+    return tagMap[tag] || `/${tag}`;
+}
+---
+
+<Layout title={`${project.data.title} - Portfolio`} description={project.data.description}>
+  <div class="project-detail">
+    <!-- Back Navigation -->
+    <div class="back-nav">
+      <a href="/" class="back-btn">← Back to Projects</a>
+    </div>
+
+    <!-- Project Header -->
+    <header class="project-header">
+      <div class="project-meta">
+        <h1>{project.data.title}</h1>
+        <div class="project-info">
+          <span class={`status status-${project.data.status}`}>{project.data.status}</span>
+          <span class="date">{project.data.date.toLocaleDateString()}</span>
+          {project.data.featured && <span class="featured-badge">⭐ Featured</span>}
+        </div>
+      </div>
+      
+      <p class="project-description">{project.data.description}</p>
+      
+      <!-- Tags -->
+      <div class="tags">
+        {project.data.tags.map((tag) => (
+          <a href={getTagUrl(tag)} class="tag">{tag}</a>
+        ))}
+      </div>
+    </header>
+
+    <!-- Project Actions -->
+    <div class="project-actions">
+      {project.data.embedType !== 'none' && project.data.liveUrl && (
+        <a href={project.data.liveUrl} class="btn btn-primary" target="_blank">
+          {project.data.embedType === 'game' ? '🎮 Play Game' : 
+           project.data.embedType === 'animation' ? '🎨 View Animation' : '🔗 View Demo'}
+        </a>
+      )}
+      {project.data.githubUrl && (
+        <a href={project.data.githubUrl} class="btn btn-secondary" target="_blank">
+          📂 GitHub Repository
+        </a>
+      )}
+      {project.data.downloadUrl && (
+        <a href={project.data.downloadUrl} class="btn btn-secondary" target="_blank">
+          📥 Download
+        </a>
+      )}
+    </div>
+
+    <!-- Project Images -->
+    {project.data.images && project.data.images.length > 0 && (
+      <div class="project-gallery">
+        {project.data.images.map((image, index) => (
+          <div class="gallery-item">
+            <img src={image} alt={`${project.data.title} screenshot ${index + 1}`} loading="lazy" />
+          </div>
+        ))}
+      </div>
+    )}
+
+    <!-- Technologies -->
+    {project.data.technologies && project.data.technologies.length > 0 && (
+      <div class="technologies-section">
+        <h2>Technologies Used</h2>
+        <div class="tech-list">
+          {project.data.technologies.map((tech) => (
+            <span class="tech-item">{tech}</span>
+          ))}
+        </div>
+      </div>
+    )}
+
+    <!-- Embedded Content -->
+    {project.data.embedType !== 'none' && project.data.embedPath && (
+      <div class="embed-section">
+        <h2>
+          {project.data.embedType === 'game' ? 'Play Game' : 
+           project.data.embedType === 'animation' ? 'View Animation' : 'Demo'}
+        </h2>
+        <div class="embed-container">
+          <iframe src={project.data.embedPath} title={project.data.title}></iframe>
+        </div>
+      </div>
+    )}
+
+    <!-- Project Content (Markdown) -->
+    <div class="project-content">
+      <Content />
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .project-detail {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .back-nav {
+    margin-bottom: 2rem;
+  }
+
+  .back-btn {
+    color: #6b7280;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+  }
+
+  .back-btn:hover {
+    color: #2563eb;
+  }
+
+  .project-header {
+    margin-bottom: 3rem;
+  }
+
+  .project-meta h1 {
+    font-size: 2.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .project-info {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+
+  .status-completed { background: #d1fae5; color: #065f46; }
+  .status-in-progress { background: #fef3c7; color: #92400e; }
+  .status-planned { background: #f3f4f6; color: #374151; }
+
+  .date {
+    color: #6b7280;
+    font-size: 0.9rem;
+  }
+
+  .featured-badge {
+    background: #fbbf24;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .project-description {
+    font-size: 1.1rem;
+    color: #4b5563;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tag {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.35rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s;
+  }
+
+  .tag:hover {
+    background: #c7d2fe;
+    color: #312e81;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-primary {
+    background: #2563eb;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+
+  .btn-secondary:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .project-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+  }
+
+  .gallery-item img:hover {
+    transform: scale(1.02);
+  }
+
+  .technologies-section {
+    margin-bottom: 3rem;
+  }
+
+  .technologies-section h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .tech-item {
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .embed-section {
+    margin-bottom: 3rem;
+  }
+
+  .embed-section h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 1rem;
+  }
+
+  .embed-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .embed-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  .project-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    line-height: 1.7;
+  }
+
+  .project-content :global(h1),
+  .project-content :global(h2),
+  .project-content :global(h3) {
+    color: #1f2937;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .project-content :global(h1) { font-size: 1.8rem; }
+  .project-content :global(h2) { font-size: 1.5rem; }
+  .project-content :global(h3) { font-size: 1.25rem; }
+
+  .project-content :global(p) {
+    margin-bottom: 1rem;
+    color: #4b5563;
+  }
+
+  .project-content :global(ul),
+  .project-content :global(ol) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    color: #4b5563;
+  }
+
+  .project-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .project-content :global(strong) {
+    color: #1f2937;
+    font-weight: 600;
+  }
+
+  .project-content :global(code) {
+    background: #f1f5f9;
+    color: #e11d48;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+  }
+
+  @media (max-width: 768px) {
+    .project-meta h1 {
+      font-size: 2rem;
+    }
+
+    .project-info {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .project-actions {
+      flex-direction: column;
+    }
+
+    .btn {
+      justify-content: center;
+    }
+
+    .project-gallery {
+      grid-template-columns: 1fr;
+    }
+
+    .embed-container {
+      height: 300px;
+    }
+
+    .project-content {
+      padding: 1.5rem;
+    }
+  }
+</style>
