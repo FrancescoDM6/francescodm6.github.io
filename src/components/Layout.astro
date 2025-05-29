@@ -15,7 +15,21 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --text: #dceff3;
+            --background: #0d272c;
+            --primary: #afcbcf;
+            --secondary: #3e4268;
+            --accent: #7c6ea9;
+            --card-bg: #1a3a41;
+            --card-hover: #2a4a51;
+            --border: #2a4a51;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -23,10 +37,10 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #f8f9fa;
+            color: var(--text);
+            background: var(--background);
         }
         
         .container {
@@ -34,76 +48,183 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
             margin: 0 auto;
             padding: 0 20px;
         }
-        
+
         header {
-            background: white;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 100;
-        }
-        
-        nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 1rem 0;
         }
         
+        .navbar {
+            background: linear-gradient(135deg, rgba(26, 58, 65, 0.98) 0%, rgba(62, 66, 104, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(175, 203, 207, 0.2);
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 900px;
+            margin: 0 auto;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(175, 203, 207, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .navbar::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, rgba(175, 203, 207, 0.3), rgba(124, 110, 169, 0.2));
+            border-radius: 50px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .navbar:hover::before {
+            opacity: 0.25;
+        }
+        
         .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #2563eb;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary);
             text-decoration: none;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 8px rgba(175, 203, 207, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .logo:hover {
+            color: var(--text);
+            text-shadow: 0 4px 16px rgba(175, 203, 207, 0.5);
+            transform: translateY(-1px);
         }
         
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 1.5rem;
             align-items: center;
         }
-        
-        .nav-links a {
+
+        .nav-links > li > a {
             text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            transition: color 0.3s;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 1px solid transparent;
         }
         
-        .nav-links a:hover {
-            color: #2563eb;
+        .nav-links > li > a:hover {
+            color: var(--text);
+            background: rgba(175, 203, 207, 0.15);
+            border-color: rgba(175, 203, 207, 0.3);
+            box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
+            transform: translateY(-2px);
         }
         
         .dropdown {
             position: relative;
         }
         
+        .dropdown-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            text-decoration: none;
+            color: rgba(220, 239, 243, 0.9);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .dropdown-toggle:hover {
+            color: var(--text);
+            background: rgba(175, 203, 207, 0.15);
+            border-color: rgba(175, 203, 207, 0.3);
+            box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .dropdown-arrow {
+            transition: transform 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--primary);
+        }
+        
+        .dropdown:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+        
         .dropdown-content {
             display: none;
             position: absolute;
-            background: white;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            border-radius: 8px;
-            padding: 0.5rem 0;
-            min-width: 180px;
-            top: 100%;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(62, 66, 104, 0.95) 100%);
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(175, 203, 207, 0.2);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(175, 203, 207, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 0.75rem 0;
+            min-width: 200px;
+            top: calc(100% + 0.75rem);
             right: 0;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
         
-        .dropdown:hover .dropdown-content {
+        /* .dropdown:hover .dropdown-content {
             display: block;
+            animation: dropdownFade 0.3s ease;
+        } */
+
+        @keyframes dropdownFade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .dropdown-content a {
             display: block;
-            padding: 0.5rem 1rem;
-            color: #333;
+            padding: 1rem 1.5rem;
+            color: rgba(220, 239, 243, 0.9);
             text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
         }
         
         .dropdown-content a:hover {
-            background: #f3f4f6;
+            background: rgba(175, 203, 207, 0.15);
+            color: var(--text);
+            border-left-color: var(--primary);
+            padding-left: 2rem;
         }
         
         main {
@@ -112,28 +233,116 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
         }
         
         footer {
-            background: #333;
-            color: white;
+            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(62, 66, 104, 0.8) 100%);
+            border-top: 2px solid rgba(175, 203, 207, 0.2);
+            color: var(--text);
             text-align: center;
-            padding: 2rem 0;
+            padding: 3rem 0;
             margin-top: 4rem;
+            box-shadow: 
+                0 -8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(175, 203, 207, 0.1);
+            position: relative;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+         /* Mobile Navigation */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 0.75rem 1rem;
+                border-radius: 25px;
+            }
+            
+            .logo {
+                font-size: 1.1rem;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: calc(100% + 0.5rem);
+                left: 0;
+                right: 0;
+                background: var(--card-bg);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1rem;
+                flex-direction: column;
+                gap: 0.5rem;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .nav-links > li > a {
+                width: 100%;
+                text-align: center;
+                padding: 0.75rem 1rem;
+            }
+            
+            .dropdown-content {
+                position: static;
+                display: block;
+                background: rgba(175, 203, 207, 0.05);
+                border: none;
+                box-shadow: none;
+                margin-top: 0.5rem;
+                border-radius: 8px;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .dropdown-arrow {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <nav>
-                <a href="/" class="logo">Your Portfolio</a>
-                    <ul class="nav-links">
-                        <li><a href="/">Home</a></li>
-                        <li><a href="/ai">AI</a></li>
-                        <li><a href="/gaming">Gaming</a></li>
-                        <li><a href="/research">Research</a></li>
-                        <li><a href="/coding-misc">Coding Misc</a></li>
-                        <li><a href="/web-dev">Web Dev</a></li>
-                        <li><a href="/all-projects">All Projects</a></li>
-                    </ul>
+            <nav class="navbar">
+                <a href="/" class="logo">Francesco Di Mise</a>
+                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/ai">AI</a></li>
+                    <li><a href="/gaming">Gaming</a></li>
+                    <li><a href="/coding-misc">Coding Misc</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle">
+                            More <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <div class="dropdown-content">
+                            <a href="/research">Research</a>
+                            <a href="/web-dev">Web Dev</a>
+                            <a href="/all-projects">All Projects</a>
+                        </div>
+                    </li>
+                </ul>
             </nav>
         </div>
     </header>
@@ -146,8 +355,71 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 Your Name. All rights reserved.</p>
+            <p>&copy; 2025 Francesco Di Mise. All rights reserved.</p>
         </div>
     </footer>
+    <script>
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks?.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const navbar = document.querySelector('.navbar');
+            const navLinks = document.getElementById('navLinks');
+            
+            if (navbar && !navbar.contains(event.target as Node)) {
+                navLinks?.classList.remove('active');
+            }
+        });
+
+        // Enhanced dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdown = document.querySelector('.dropdown');
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownContent = document.querySelector('.dropdown-content') as HTMLElement;
+            let dropdownTimeout: ReturnType<typeof setTimeout> | null = null;
+            let isDropdownOpen = false;
+
+            if (dropdown && dropdownContent && dropdownToggle) {
+                // Show dropdown on mouse enter dropdown container
+                dropdown.addEventListener('mouseenter', function() {
+                    if (dropdownTimeout) clearTimeout(dropdownTimeout);
+                    if (!isDropdownOpen) {
+                        dropdownContent.style.display = 'block';
+                        isDropdownOpen = true;
+                        // Trigger animation
+                        setTimeout(() => {
+                            dropdownContent.style.opacity = '1';
+                            dropdownContent.style.transform = 'translateY(0)';
+                        }, 10);
+                    }
+                });
+
+                // Hide dropdown with delay when leaving entire dropdown area
+                dropdown.addEventListener('mouseleave', function() {
+                    dropdownTimeout = setTimeout(() => {
+                        dropdownContent.style.opacity = '0';
+                        dropdownContent.style.transform = 'translateY(-10px)';
+                        setTimeout(() => {
+                            dropdownContent.style.display = 'none';
+                            isDropdownOpen = false;
+                        }, 300);
+                    }, 150);
+                });
+
+                // Cancel close timeout when re-entering dropdown area
+                dropdown.addEventListener('mouseenter', function() {
+                    if (dropdownTimeout) clearTimeout(dropdownTimeout);
+                });
+
+                // Initial styles for smooth transitions
+                dropdownContent.style.opacity = '0';
+                dropdownContent.style.transform = 'translateY(-10px)';
+                dropdownContent.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            }
+        });
+    </script>
 </body>
 </html>
