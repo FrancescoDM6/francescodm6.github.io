@@ -1,6 +1,7 @@
 ---
 import Layout from '../components/Layout.astro';
 import ProjectCard from '../components/ProjectCard.astro';
+import PageHeader from '../components/PageHeader.astro';
 import { getCollection } from 'astro:content';
 
 const allProjects = await getCollection('projects');
@@ -19,15 +20,12 @@ const tagGroups = {
 ---
 
 <Layout title="All Projects - Portfolio" description="Complete collection of all portfolio projects">
-  <div class="page-header">
-    <h1>📁 All Projects</h1>
-    <p class="page-description">
-      Complete collection of all projects across AI, gaming, research, and development.
-    </p>
-    <div class="page-stats">
-      <span class="stat">{allProjects.length} total projects</span>
-    </div>
-  </div>
+  <PageHeader 
+    title="📁 All Projects"
+    description="Complete collection of all projects across AI, gaming, research, and development."
+    stats={[{ label: 'total projects', value: allProjects.length }]}
+    variant="gradient"
+  />
 
   <!-- Filter Options -->
   <div class="filter-section">
@@ -66,38 +64,6 @@ const tagGroups = {
 </Layout>
 
 <style>
-  .page-header {
-    text-align: center;
-    margin-bottom: 3rem;
-    padding: 2rem 0;
-  }
-  
-  .page-header h1 {
-    font-size: 2.5rem;
-    color: #1f2937;
-    margin-bottom: 1rem;
-  }
-  
-  .page-description {
-    font-size: 1.1rem;
-    color: #6b7280;
-    max-width: 600px;
-    margin: 0 auto 1rem auto;
-    line-height: 1.6;
-  }
-  
-  .page-stats {
-    margin-top: 1rem;
-  }
-  
-  .stat {
-    background: #e0e7ff;
-    color: #3730a3;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 500;
-  }
-  
   .filter-section {
     margin-bottom: 2rem;
     text-align: center;
@@ -105,7 +71,8 @@ const tagGroups = {
   
   .filter-section h3 {
     margin-bottom: 1rem;
-    color: #374151;
+    color: var(--text);
+    font-weight: 600;
   }
   
   .filter-buttons {
@@ -116,24 +83,30 @@ const tagGroups = {
   }
   
   .filter-btn {
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    color: #374151;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: 25px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     font-size: 0.9rem;
+    font-weight: 600;
   }
   
   .filter-btn:hover {
-    background: #e5e7eb;
+    background: var(--card-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
   }
   
   .filter-btn.active {
-    background: #2563eb;
-    color: white;
-    border-color: #2563eb;
+    background: var(--primary);
+    color: var(--background);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(175, 203, 207, 0.3);
   }
   
   .projects-grid {
@@ -151,10 +124,6 @@ const tagGroups = {
   }
   
   @media (max-width: 768px) {
-    .page-header h1 {
-      font-size: 2rem;
-    }
-    
     .projects-grid {
       grid-template-columns: 1fr;
     }

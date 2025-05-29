@@ -1,0 +1,126 @@
+---
+export interface Props {
+  title: string;
+  icon?: string;
+  description: string;
+  stats?: { label: string; value: number | string }[];
+  variant?: 'default' | 'gradient';
+}
+
+const { 
+  title, 
+  icon, 
+  description, 
+  stats = [],
+  variant = 'gradient'
+} = Astro.props;
+---
+
+<div class={`page-header ${variant}`}>
+  <div class="header-content">
+    {icon && <div class="header-icon">{icon}</div>}
+    <h1>{title}</h1>
+    <p class="page-description">{description}</p>
+    {stats.length > 0 && (
+      <div class="page-stats">
+        {stats.map((stat) => (
+          <span class="stat">{stat.value} {stat.label}</span>
+        ))}
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  .page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem 0;
+    border-radius: 24px;
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .page-header.gradient {
+    background: linear-gradient(135deg, rgba(62, 66, 104, 0.3) 0%, rgba(124, 110, 169, 0.2) 100%);
+    margin-bottom: 4rem;
+    padding: 3rem 0;
+  }
+  
+  .page-header.gradient::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="25" cy="75" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="75" cy="25" r="1" fill="%23ffffff" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    /* background-repeat: repeat; */
+    /* background-size: 0px 0px; */
+    filter: blur(1px);
+    pointer-events: none;
+  }
+  
+  .header-content {
+    position: relative;
+    z-index: 1;
+  }
+  
+  .header-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .page-header h1 {
+    font-size: 2.5rem;
+    color: var(--text);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  
+  .page-header.gradient h1 {
+    font-size: 3rem;
+  }
+  
+  .page-description {
+    font-size: 1.1rem;
+    color: #6b7280;
+    max-width: 600px;
+    margin: 0 auto 1rem auto;
+    line-height: 1.6;
+  }
+  
+  .page-stats {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .stat {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  
+  @media (max-width: 768px) {
+    .page-header h1 {
+      font-size: 2rem;
+    }
+    
+    .page-header.gradient h1 {
+      font-size: 2rem;
+    }
+    
+    .page-stats {
+      gap: 0.5rem;
+    }
+  }
+</style>
