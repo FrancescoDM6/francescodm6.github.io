@@ -1,0 +1,285 @@
+---
+import Layout from '../../components/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const sortedPosts = allPosts.sort((a, b) => 
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const featuredPosts = sortedPosts.filter(post => post.data.featured);
+const recentPosts = sortedPosts.slice(0, 6);
+
+// Get category counts
+const categoryCounts = {
+  ai: allPosts.filter(p => p.data.category === 'ai').length,
+  gaming: allPosts.filter(p => p.data.category === 'gaming').length,
+  webDev: allPosts.filter(p => p.data.category === 'web-dev').length,
+  research: allPosts.filter(p => p.data.category === 'research').length,
+  thoughts: allPosts.filter(p => p.data.category === 'thoughts').length,
+  tutorials: allPosts.filter(p => p.data.category === 'tutorials').length,
+};
+---
+
+<Layout title="Blog - Francesco Di Mise" description="Thoughts, tutorials, and insights on AI, development, and technology">
+  <PageHeader 
+    title="📝 Blog"
+    description="Thoughts, tutorials, and insights on AI, development, and technology. Exploring the intersection of code and creativity."
+    stats={[{ label: 'total posts', value: allPosts.length }]}
+    variant="gradient"
+  />
+
+  <!-- Category Navigation -->
+  <div class="category-nav">
+    <h3>Browse by Category</h3>
+    <div class="category-links">
+      <a href="/blog/category/ai" class="category-link">
+        <span class="category-icon">🤖</span>
+        <span class="category-name">AI</span>
+        <span class="category-count">({categoryCounts.ai})</span>
+      </a>
+      <a href="/blog/category/gaming" class="category-link">
+        <span class="category-icon">🎮</span>
+        <span class="category-name">Gaming</span>
+        <span class="category-count">({categoryCounts.gaming})</span>
+      </a>
+      <a href="/blog/category/web-dev" class="category-link">
+        <span class="category-icon">🌐</span>
+        <span class="category-name">Web Dev</span>
+        <span class="category-count">({categoryCounts.webDev})</span>
+      </a>
+      <a href="/blog/category/tutorials" class="category-link">
+        <span class="category-icon">📚</span>
+        <span class="category-name">Tutorials</span>
+        <span class="category-count">({categoryCounts.tutorials})</span>
+      </a>
+      <a href="/blog/category/research" class="category-link">
+        <span class="category-icon">🔬</span>
+        <span class="category-name">Research</span>
+        <span class="category-count">({categoryCounts.research})</span>
+      </a>
+      <a href="/blog/category/thoughts" class="category-link">
+        <span class="category-icon">💭</span>
+        <span class="category-name">Thoughts</span>
+        <span class="category-count">({categoryCounts.thoughts})</span>
+      </a>
+    </div>
+  </div>
+
+  {featuredPosts.length > 0 && (
+    <section class="featured-section">
+      <h2>Featured Posts</h2>
+      <div class="posts-grid">
+        {featuredPosts.map((post) => (
+          <BlogCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            updated={post.data.updated}
+            category={post.data.category}
+            tags={post.data.tags}
+            coverImage={post.data.coverImage}
+            readTime={post.data.readTime}
+            slug={post.slug}
+            featured={post.data.featured}
+          />
+        ))}
+      </div>
+    </section>
+  )}
+
+  <section class="recent-section">
+    <div class="section-header">
+      <h2>Recent Posts</h2>
+      {allPosts.length > 6 && (
+        <a href="/blog/all" class="view-all-btn">View All Posts →</a>
+      )}
+    </div>
+    
+    {allPosts.length > 0 ? (
+      <div class="posts-grid">
+        {recentPosts.map((post) => (
+          <BlogCard
+            title={post.data.title}
+            description={post.data.description}
+            date={post.data.date}
+            updated={post.data.updated}
+            category={post.data.category}
+            tags={post.data.tags}
+            coverImage={post.data.coverImage}
+            readTime={post.data.readTime}
+            slug={post.slug}
+            featured={post.data.featured}
+          />
+        ))}
+      </div>
+    ) : (
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <h3>No blog posts yet</h3>
+        <p>Check back soon for thoughts and tutorials!</p>
+        <a href="/" class="back-home-btn">← Back to Home</a>
+      </div>
+    )}
+  </section>
+</Layout>
+
+<style>
+  .category-nav {
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+  
+  .category-nav h3 {
+    margin-bottom: 1.5rem;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1.2rem;
+  }
+  
+  .category-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .category-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    padding: 0.75rem 1.25rem;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  
+  .category-link:hover {
+    background: var(--card-hover);
+    border-color: var(--primary);
+    color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
+  }
+  
+  .category-icon {
+    font-size: 1.1rem;
+  }
+  
+  .category-count {
+    color: rgba(220, 239, 243, 0.6);
+    font-size: 0.85rem;
+  }
+  
+  .featured-section,
+  .recent-section {
+    margin: 4rem 0;
+  }
+  
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .section-header h2, .featured-section h2 {
+    font-size: 2.25rem;
+    margin: 0;
+    color: var(--text);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  
+  .view-all-btn {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    border: 1px solid rgba(175, 203, 207, 0.3);
+  }
+  
+  .view-all-btn:hover {
+    color: var(--text);
+    background: rgba(175, 203, 207, 0.1);
+    transform: translateX(4px);
+  }
+  
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 2rem;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(220, 239, 243, 0.6);
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .empty-state h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  
+  .back-home-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: var(--background);
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .back-home-btn:hover {
+    background: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(175, 203, 207, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+    
+    .section-header h2, .featured-section h2 {
+      font-size: 1.8rem;
+    }
+    
+    .category-links {
+      justify-content: center;
+    }
+    
+    .category-link {
+      font-size: 0.85rem;
+      padding: 0.6rem 1rem;
+    }
+  }
+</style>

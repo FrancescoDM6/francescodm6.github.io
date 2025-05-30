@@ -1,0 +1,200 @@
+---
+import Layout from '../../components/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+// Get related posts (same category, excluding current post)
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const relatedPosts = allPosts
+  .filter(p => p.slug !== post.slug && p.data.category === post.data.category)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 3);
+---
+
+<Layout title={`${post.data.title} - Blog`} description={post.data.description}>
+  <div class="blog-post">
+    <!-- Back Navigation -->
+    <div class="back-nav">
+      <a href="/blog" class="back-btn">← Back to Blog</a>
+    </div>
+
+    <!-- Post Header -->
+    <header class="post-header">
+      {post.data.coverImage && (
+        <div class="cover-image">
+          <img src={post.data.coverImage} alt={post.data.title} />
+        </div>
+      )}
+      
+      <div class="post-meta-header">
+        <div class="post-info">
+          {post.data.category && (
+            <span class={`category category-${post.data.category}`}>{post.data.category}</span>
+          )}
+          <span class="post-date">{post.data.date.toLocaleDateString()}</span>
+          {post.data.readTime && <span class="read-time">📖 {post.data.readTime} min read</span>}
+        </div>
+        
+        <h1>{post.data.title}</h1>
+        <p class="post-description">{post.data.description}</p>
+        
+        {post.data.tags && post.data.tags.length > 0 && (
+          <div class="tags">
+            {post.data.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+        )}
+        
+        {post.data.updated && (
+          <div class="updated-notice">
+            <span>Last updated: {post.data.updated.toLocaleDateString()}</span>
+          </div>
+        )}
+      </div>
+    </header>
+
+    <!-- Post Content -->
+    <div class="post-content">
+      <Content />
+    </div>
+
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <section class="related-posts">
+        <h2>Related Posts</h2>
+        <div class="related-grid">
+          {relatedPosts.map((relatedPost) => (
+            <a href={`/blog/${relatedPost.slug}`} class="related-card">
+              {relatedPost.data.coverImage && (
+                <div class="related-image">
+                  <img src={relatedPost.data.coverImage} alt={relatedPost.data.title} />
+                </div>
+              )}
+              <div class="related-content">
+                <h3>{relatedPost.data.title}</h3>
+                <p>{relatedPost.data.description}</p>
+                <span class="related-date">{relatedPost.data.date.toLocaleDateString()}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- Navigation Footer -->
+    <div class="post-footer">
+      <a href="/blog" class="footer-btn">← Back to Blog</a>
+      <a href="/" class="footer-btn">Home</a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .blog-post {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .back-nav {
+    margin-bottom: 3rem;
+  }
+
+  .back-btn {
+    color: rgba(220, 239, 243, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    background: var(--card-bg);
+  }
+
+  .back-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: rgba(175, 203, 207, 0.1);
+    transform: translateX(-4px);
+  }
+
+  .post-header {
+    margin-bottom: 4rem;
+  }
+
+  .cover-image {
+    width: 100%;
+    height: 400px;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--border);
+  }
+
+  .cover-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-meta-header {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 3rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .post-info {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .category {
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    border: 1px solid transparent;
+  }
+
+  .category-ai { 
+    background: rgba(175, 203, 207, 0.2); 
+    color: var(--primary); 
+    border-color: rgba(175, 203, 207, 0.3);
+  }
+  .category-gaming { 
+    background: rgba(124, 110, 169, 0.2); 
+    color: var(--accent); 
+    border-color: rgba(124, 110, 169, 0.3);
+  }
+  .category-web-dev { 
+    background: rgba(62, 66, 104, 0.3); 
+    color: var(--secondary); 
+    border-color: rgba(62, 66, 104, 0.4);
+  }
+  .category-research { 
+    background: rgba(175, 203, 207, 0.15); 
+    color: var(--primary); 
+    border-color: rgba(175, 203, 207, 0.2);
+  }
+  .

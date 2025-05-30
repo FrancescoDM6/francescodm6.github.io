@@ -1,0 +1,176 @@
+---
+import Layout from '../../components/Layout.astro';
+import BlogCard from '../../components/BlogCard.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const categories = ['ai', 'gaming', 'web-dev', 'research', 'thoughts', 'tutorials'];
+  
+  return categories.map((category) => ({
+    params: { category },
+    props: { category },
+  }));
+}
+
+const { category } = Astro.props;
+
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const categoryPosts = allPosts
+  .filter(post => post.data.category === category)
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+
+// Category metadata
+const categoryInfo = {
+  'ai': {
+    title: 'AI & Machine Learning',
+    icon: '🤖',
+    description: 'Posts about artificial intelligence, machine learning, neural networks, and intelligent systems.'
+  },
+  'gaming': {
+    title: 'Gaming & Interactive',
+    icon: '🎮',
+    description: 'Game development, interactive experiences, game AI, and gaming industry insights.'
+  },
+  'web-dev': {
+    title: 'Web Development',
+    icon: '🌐',
+    description: 'Frontend frameworks, backend systems, web technologies, and development best practices.'
+  },
+  'research': {
+    title: 'Research & Academia',
+    icon: '🔬',
+    description: 'Academic research, experimental projects, scientific papers, and research methodologies.'
+  },
+  'thoughts': {
+    title: 'Thoughts & Opinions',
+    icon: '💭',
+    description: 'Personal reflections, industry observations, and thoughts on technology and innovation.'
+  },
+  'tutorials': {
+    title: 'Tutorials & Guides',
+    icon: '📚',
+    description: 'Step-by-step tutorials, how-to guides, and educational content for developers.'
+  }
+};
+
+const info = categoryInfo[category as keyof typeof categoryInfo];
+const pageTitle = `${info.title} - Blog`;
+const pageDescription = `${info.description}`;
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <PageHeader 
+    title={info.title}
+    icon={info.icon}
+    description={info.description}
+    stats={[{ label: 'posts', value: categoryPosts.length }]}
+    variant="gradient"
+  />
+
+  <!-- Back to Blog -->
+  <div class="back-nav">
+    <a href="/blog" class="back-btn">← Back to All Posts</a>
+  </div>
+
+  {categoryPosts.length > 0 ? (
+    <div class="posts-grid">
+      {categoryPosts.map((post) => (
+        <BlogCard
+          title={post.data.title}
+          description={post.data.description}
+          date={post.data.date}
+          updated={post.data.updated}
+          category={post.data.category}
+          tags={post.data.tags}
+          coverImage={post.data.coverImage}
+          readTime={post.data.readTime}
+          slug={post.slug}
+          featured={post.data.featured}
+        />
+      ))}
+    </div>
+  ) : (
+    <div class="empty-state">
+      <div class="empty-icon">{info.icon}</div>
+      <h3>No {info.title.toLowerCase()} posts yet</h3>
+      <p>Check back soon for {info.title.toLowerCase()} content!</p>
+      <a href="/blog" class="back-blog-btn">← Back to Blog</a>
+    </div>
+  )}
+</Layout>
+
+<style>
+  .back-nav {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  .back-btn {
+    color: rgba(220, 239, 243, 0.7);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid var(--border);
+    border-radius: 25px;
+    background: var(--card-bg);
+  }
+
+  .back-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: rgba(175, 203, 207, 0.1);
+    transform: translateX(-4px);
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 2rem;
+  }
+  
+  .empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: rgba(220, 239, 243, 0.6);
+  }
+  
+  .empty-state .empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+  
+  .empty-state h3 {
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  
+  .back-blog-btn {
+    display: inline-block;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--primary);
+    color: var(--background);
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  .back-blog-btn:hover {
+    background: var(--text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(175, 203, 207, 0.3);
+  }
+  
+  @media (max-width: 768px) {
+    .posts-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

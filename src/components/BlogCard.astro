@@ -1,0 +1,260 @@
+---
+export interface Props {
+    title: string;
+    description: string;
+    date: Date;
+    updated?: Date;
+    category?: string;
+    tags?: string[];
+    coverImage?: string;
+    readTime?: number;
+    slug: string;
+    featured?: boolean;
+}
+
+const { 
+    title, 
+    description, 
+    date, 
+    updated,
+    category,
+    tags = [],
+    coverImage,
+    readTime,
+    slug,
+    featured = false
+} = Astro.props;
+---
+
+<article class="blog-card" class:list={[{ featured }]}>
+    {featured && <div class="featured-badge">⭐ Featured</div>}
+    
+    {coverImage && (
+        <div class="blog-image">
+            <img src={coverImage} alt={title} loading="lazy" />
+        </div>
+    )}
+    
+    <div class="blog-content">
+        <div class="blog-header">
+            <a href={`/blog/${slug}`} class="blog-title-link">
+                <h3>{title}</h3>
+            </a>
+            {category && <span class={`category category-${category}`}>{category}</span>}
+        </div>
+        
+        <p class="description">{description}</p>
+        
+        {tags && tags.length > 0 && (
+            <div class="tags">
+                {tags.map((tag) => (
+                    <span class="tag">{tag}</span>
+                ))}
+            </div>
+        )}
+        
+        <div class="blog-footer">
+            <div class="blog-meta">
+                <span class="date">{date.toLocaleDateString()}</span>
+                {readTime && <span class="read-time">{readTime} min read</span>}
+                {updated && <span class="updated">Updated {updated.toLocaleDateString()}</span>}
+            </div>
+        </div>
+    </div>
+</article>
+
+<style>
+    .blog-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    }
+    
+    .blog-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        border-color: var(--primary);
+    }
+    
+    .blog-card.featured {
+        border-color: var(--accent);
+        background: linear-gradient(135deg, var(--card-bg) 0%, rgba(124, 110, 169, 0.1) 100%);
+    }
+    
+    .featured-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--accent);
+        color: var(--text);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        z-index: 10;
+        box-shadow: 0 2px 8px rgba(124, 110, 169, 0.3);
+    }
+    
+    .blog-image {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .blog-image::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, transparent 0%, rgba(13, 39, 44, 0.3) 100%);
+    }
+    
+    .blog-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .blog-card:hover .blog-image img {
+        transform: scale(1.05);
+    }
+    
+    .blog-content {
+        padding: 1.5rem;
+    }
+    
+    .blog-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .blog-title-link {
+        text-decoration: none;
+        color: inherit;
+        flex: 1;
+        transition: all 0.3s ease;
+    }
+
+    .blog-title-link h3 {
+        margin: 0;
+        color: var(--text);
+        font-size: 1.3rem;
+        font-weight: 600;
+        line-height: 1.3;
+        transition: color 0.3s ease;
+    }
+
+    .blog-title-link:hover h3 {
+        color: var(--primary);
+    }
+    
+    .category {
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: capitalize;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+    
+    .category-ai { 
+        background: rgba(175, 203, 207, 0.2); 
+        color: var(--primary); 
+        border-color: rgba(175, 203, 207, 0.3);
+    }
+    .category-gaming { 
+        background: rgba(124, 110, 169, 0.2); 
+        color: var(--accent); 
+        border-color: rgba(124, 110, 169, 0.3);
+    }
+    .category-web-dev { 
+        background: rgba(62, 66, 104, 0.3); 
+        color: var(--secondary); 
+        border-color: rgba(62, 66, 104, 0.4);
+    }
+    .category-research { 
+        background: rgba(175, 203, 207, 0.15); 
+        color: var(--primary); 
+        border-color: rgba(175, 203, 207, 0.2);
+    }
+    .category-thoughts { 
+        background: rgba(124, 110, 169, 0.15); 
+        color: var(--accent); 
+        border-color: rgba(124, 110, 169, 0.2);
+    }
+    .category-tutorials { 
+        background: rgba(62, 66, 104, 0.25); 
+        color: var(--secondary); 
+        border-color: rgba(62, 66, 104, 0.3);
+    }
+    
+    .description {
+        color: rgba(220, 239, 243, 0.8);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+        font-size: 0.95rem;
+    }
+    
+    .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .tag {
+        background: rgba(175, 203, 207, 0.15);
+        color: var(--primary);
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        border: 1px solid rgba(175, 203, 207, 0.2);
+    }
+    
+    .blog-footer {
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    .blog-meta {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        color: rgba(220, 239, 243, 0.6);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .read-time::before {
+        content: "📖 ";
+    }
+    
+    .updated {
+        color: rgba(124, 110, 169, 0.8);
+    }
+
+    @media (max-width: 768px) {
+        .blog-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+        
+        .blog-meta {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+    }
+</style>

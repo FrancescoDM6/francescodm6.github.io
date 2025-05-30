@@ -14,12 +14,28 @@ const projectsCollection = defineCollection({
     githubUrl: z.string().url().optional(),
     images: z.array(z.string()).optional(),
     technologies: z.array(z.string()).optional(),
-    // For embedded content like games/animations
     embedType: z.enum(['game', 'animation', 'demo', 'none']).optional().default('none'),
-    embedPath: z.string().optional(), // Path to the embedded content
+    embedPath: z.string().optional(),
+  })
+});
+
+const blogCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    updated: z.date().optional(),
+    draft: z.boolean().optional().default(false),
+    featured: z.boolean().optional().default(false),
+    category: z.enum(['ai', 'gaming', 'web-dev', 'research', 'thoughts', 'tutorials']).optional(),
+    tags: z.array(z.string()).optional(),
+    coverImage: z.string().optional(),
+    readTime: z.number().optional(),
   })
 });
 
 export const collections = {
   'projects': projectsCollection,
+  'blog': blogCollection,
 };
