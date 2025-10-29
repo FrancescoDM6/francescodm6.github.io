@@ -193,10 +193,11 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
             transition: opacity 0.3s ease, transform 0.3s ease;
         }
         
-        /* .dropdown:hover .dropdown-content {
+        .dropdown:hover .dropdown-content {
             display: block;
-            animation: dropdownFade 0.3s ease;
-        } */
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         @keyframes dropdownFade {
             from {
@@ -359,7 +360,7 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
             <p>&copy; 2025 Francesco Di Mise. All rights reserved.</p>
         </div>
     </footer>
-    <script>
+    <script is:inline>
         function toggleMobileMenu() {
             const navLinks = document.getElementById('navLinks');
             navLinks?.classList.toggle('active');
