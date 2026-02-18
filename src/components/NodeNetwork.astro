@@ -335,12 +335,8 @@
     const runtime = getNodeNetworkRuntime();
 
     if (!runtime.pageLoadBound) {
-        const onPageLoad = () => {
-            initNodeNetwork();
-        };
-
         runtime.pageLoadBound = true;
-        runtime.onPageLoad = onPageLoad;
-        document.addEventListener('astro:page-load', onPageLoad);
+        runtime.onPageLoad = initNodeNetwork();
+        document.addEventListener('astro:page-load', initNodeNetwork);
     }
 </script>
