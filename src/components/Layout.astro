@@ -365,8 +365,13 @@ const currentUrl = Astro.site
     </footer>
 
     <script>
+        let revealObserver: IntersectionObserver | null = null;
+
         function initReveals() {
             const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            revealObserver?.disconnect();
+            revealObserver = null;
 
             document.querySelectorAll('.reveal').forEach((el, i) => {
                 if (prefersReduced) {
@@ -393,11 +398,26 @@ const currentUrl = Astro.site
             }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
             document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+            revealObserver = observer;
+        }
+
+        function cleanupRevealObserver() {
+            revealObserver?.disconnect();
+            revealObserver = null;
         }
 
         // Run on initial load and on View Transition navigations
         initReveals();
-        document.addEventListener('astro:page-load', initReveals);
+
+        if (!(window as Window & { __hasRevealPageLoadListener?: boolean }).__hasRevealPageLoadListener) {
+            document.addEventListener('astro:page-load', initReveals);
+            (window as Window & { __hasRevealPageLoadListener?: boolean }).__hasRevealPageLoadListener = true;
+        }
+
+        if (!(window as Window & { __hasRevealBeforeSwapListener?: boolean }).__hasRevealBeforeSwapListener) {
+            document.addEventListener('astro:before-swap', cleanupRevealObserver);
+            (window as Window & { __hasRevealBeforeSwapListener?: boolean }).__hasRevealBeforeSwapListener = true;
+        }
     </script>
 </body>
 </html>
