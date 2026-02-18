@@ -6,10 +6,13 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "generate:llms": "node scripts/generate-llms-full.mjs",
+    "prebuild": "npm run generate:llms"
   },
   "dependencies": {
     "astro": "^5.8.0",
     "@astrojs/sitemap": "file:vendor/astrojs-sitemap"
+    "gray-matter": "^4.0.3"
   }
 }
