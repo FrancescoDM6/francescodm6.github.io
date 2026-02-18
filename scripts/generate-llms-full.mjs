@@ -193,7 +193,7 @@ function buildIndex(allEntries) {
   const lines = [
     '# LLM Index',
     '',
-    'Site purpose: Portfolio website for Francesco Di Mario focused on AI implementation, product operations, and case-study driven work history.',
+    'Site purpose: Portfolio website for Francesco Di Mise focused on AI implementation, product operations, and case-study driven work history.',
     '',
     `Canonical root: ${siteBase}`,
     '',

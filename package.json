@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "astro": "^5.8.0",
-    "@astrojs/sitemap": "file:vendor/astrojs-sitemap"
+    "@astrojs/sitemap": "file:vendor/astrojs-sitemap",
     "gray-matter": "^4.0.3"
   }
 }
