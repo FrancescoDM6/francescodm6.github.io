@@ -1,0 +1,277 @@
+---
+/**
+ * NodeNetwork — Animated grid-path traces
+ *
+ * Draws light pulses that travel along the 64px background grid lines.
+ * Purely passive/ambient — no cursor interaction. Creates a subtle
+ * "data flowing through a network" feel.
+ *
+ * Each trace is a short glowing segment that moves along a horizontal
+ * or vertical grid line, turns at intersections, and fades in/out.
+ *
+ * - Matches body::before 64px grid
+ * - Scroll-based opacity fade
+ * - Reduced-motion: static, no animation
+ */
+---
+
+<canvas id="node-network" class="node-network" aria-hidden="true"></canvas>
+
+<style>
+    .node-network {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+    }
+</style>
+
+<script>
+    function initNodeNetwork() {
+        const canvas = document.getElementById('node-network') as HTMLCanvasElement | null;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (prefersReduced) return; // No animation at all for reduced motion
+
+        const GRID = 64;
+        const TRACE_COLOR = [45, 212, 190]; // primary teal RGB
+        const TRACE_LENGTH = GRID * 2.5; // Length of each glowing trace segment
+        const TRACE_SPEED = 0.6; // Pixels per frame
+        const MAX_TRACES = 12; // Number of active traces
+        const TURN_CHANCE = 0.35; // Probability of turning at an intersection
+        const TRACE_WIDTH = 0.5;
+        const GLOBAL_OPACITY = 0.4; // Keep traces subtle
+
+        type Direction = 'up' | 'down' | 'left' | 'right';
+
+        interface Trace {
+            // Head position (the leading edge)
+            x: number;
+            y: number;
+            dir: Direction;
+            // Trail: list of line segments
+            segments: { x1: number; y1: number; x2: number; y2: number }[];
+            totalLength: number; // Total path length traveled
+            life: number; // 0..1 fade lifecycle
+            maxLife: number; // frames before fade-out
+            age: number;
+        }
+
+        let traces: Trace[] = [];
+        let width = 0;
+        let height = 0;
+        let rafId: number | null = null;
+        let scrollOpacity = 1;
+
+        // Grid dimensions
+        let cols = 0;
+        let rows = 0;
+
+        function resize() {
+            const dpr = window.devicePixelRatio || 1;
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas!.width = width * dpr;
+            canvas!.height = height * dpr;
+            canvas!.style.width = `${width}px`;
+            canvas!.style.height = `${height}px`;
+            ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+            cols = Math.ceil(width / GRID);
+            rows = Math.ceil(height / GRID);
+        }
+
+        function spawnTrace(): Trace {
+            // Pick a random grid intersection to start from
+            const col = Math.floor(Math.random() * (cols + 1));
+            const row = Math.floor(Math.random() * (rows + 1));
+            const x = col * GRID;
+            const y = row * GRID;
+
+            // Pick a random direction
+            const dirs: Direction[] = ['up', 'down', 'left', 'right'];
+            const dir = dirs[Math.floor(Math.random() * dirs.length)];
+
+            return {
+                x,
+                y,
+                dir,
+                segments: [],
+                totalLength: 0,
+                life: 0,
+                maxLife: 300 + Math.random() * 400, // 300-700 frames
+                age: 0,
+            };
+        }
+
+        function getDelta(dir: Direction): [number, number] {
+            switch (dir) {
+                case 'up': return [0, -TRACE_SPEED];
+                case 'down': return [0, TRACE_SPEED];
+                case 'left': return [-TRACE_SPEED, 0];
+                case 'right': return [TRACE_SPEED, 0];
+            }
+        }
+
+        function isOnGridIntersection(x: number, y: number): boolean {
+            return Math.abs(x % GRID) < TRACE_SPEED * 1.5 &&
+                   Math.abs(y % GRID) < TRACE_SPEED * 1.5;
+        }
+
+        function getPerpendicularDirs(dir: Direction): Direction[] {
+            if (dir === 'up' || dir === 'down') return ['left', 'right'];
+            return ['up', 'down'];
+        }
+
+        function updateTrace(trace: Trace) {
+            trace.age++;
+
+            // Lifecycle: fade in for first 60 frames, fade out for last 60
+            const fadeIn = Math.min(trace.age / 60, 1);
+            const fadeOut = Math.max(1 - (trace.age - (trace.maxLife - 60)) / 60, 0);
+            trace.life = Math.min(fadeIn, fadeOut);
+
+            if (trace.age > trace.maxLife) return; // Dead
+
+            const [dx, dy] = getDelta(trace.dir);
+            const prevX = trace.x;
+            const prevY = trace.y;
+
+            trace.x += dx;
+            trace.y += dy;
+
+            // Add segment
+            if (trace.segments.length === 0 ||
+                trace.segments[trace.segments.length - 1].x2 !== prevX ||
+                trace.segments[trace.segments.length - 1].y2 !== prevY) {
+                trace.segments.push({ x1: prevX, y1: prevY, x2: trace.x, y2: trace.y });
+            } else {
+                // Extend the last segment
+                const last = trace.segments[trace.segments.length - 1];
+                last.x2 = trace.x;
+                last.y2 = trace.y;
+            }
+
+            trace.totalLength += TRACE_SPEED;
+
+            // Trim old segments to keep only TRACE_LENGTH worth of trail
+            while (trace.segments.length > 1) {
+                const first = trace.segments[0];
+                const segLen = Math.sqrt(
+                    (first.x2 - first.x1) ** 2 + (first.y2 - first.y1) ** 2
+                );
+                if (trace.totalLength - segLen > TRACE_LENGTH) {
+                    trace.totalLength -= segLen;
+                    trace.segments.shift();
+                } else {
+                    // Partially trim the first segment
+                    const excess = trace.totalLength - TRACE_LENGTH;
+                    if (excess > 0) {
+                        const ratio = excess / segLen;
+                        first.x1 += (first.x2 - first.x1) * ratio;
+                        first.y1 += (first.y2 - first.y1) * ratio;
+                        trace.totalLength -= excess;
+                    }
+                    break;
+                }
+            }
+
+            // Check for turns at intersections
+            if (isOnGridIntersection(trace.x, trace.y) && Math.random() < TURN_CHANCE) {
+                // Snap to grid
+                trace.x = Math.round(trace.x / GRID) * GRID;
+                trace.y = Math.round(trace.y / GRID) * GRID;
+                // Turn perpendicular
+                const perpDirs = getPerpendicularDirs(trace.dir);
+                trace.dir = perpDirs[Math.floor(Math.random() * perpDirs.length)];
+                // Start a new segment for the turn
+                trace.segments.push({ x1: trace.x, y1: trace.y, x2: trace.x, y2: trace.y });
+            }
+
+            // Kill if off-screen
+            if (trace.x < -GRID || trace.x > width + GRID ||
+                trace.y < -GRID || trace.y > height + GRID) {
+                trace.age = trace.maxLife + 1;
+            }
+        }
+
+        function drawTrace(trace: Trace) {
+            if (trace.segments.length === 0 || trace.life <= 0) return;
+
+            const alpha = trace.life * scrollOpacity * GLOBAL_OPACITY;
+            if (alpha < 0.005) return;
+
+            // Draw each segment with gradient alpha (tail fades out)
+            const totalSegs = trace.segments.length;
+            for (let i = 0; i < totalSegs; i++) {
+                const seg = trace.segments[i];
+                const progress = i / totalSegs; // 0 = oldest (tail), 1 = newest (head)
+                const segAlpha = alpha * (0.1 + 0.9 * progress); // Tail is dimmer
+
+                ctx!.beginPath();
+                ctx!.moveTo(seg.x1, seg.y1);
+                ctx!.lineTo(seg.x2, seg.y2);
+                ctx!.strokeStyle = `rgba(${TRACE_COLOR[0]}, ${TRACE_COLOR[1]}, ${TRACE_COLOR[2]}, ${segAlpha.toFixed(3)})`;
+                ctx!.lineWidth = TRACE_WIDTH;
+                ctx!.lineCap = 'round';
+                ctx!.stroke();
+            }
+
+            // Draw a brighter dot at the head
+            const headAlpha = alpha * 0.6;
+            ctx!.beginPath();
+            ctx!.arc(trace.x, trace.y, 1.5, 0, Math.PI * 2);
+            ctx!.fillStyle = `rgba(${TRACE_COLOR[0]}, ${TRACE_COLOR[1]}, ${TRACE_COLOR[2]}, ${headAlpha.toFixed(3)})`;
+            ctx!.fill();
+        }
+
+        function animate() {
+            if (!ctx) return;
+            ctx.clearRect(0, 0, width, height);
+
+            // Spawn new traces to maintain count
+            while (traces.length < MAX_TRACES) {
+                traces.push(spawnTrace());
+            }
+
+            // Update and draw
+            for (const trace of traces) {
+                updateTrace(trace);
+                drawTrace(trace);
+            }
+
+            // Remove dead traces
+            traces = traces.filter(t => t.age <= t.maxLife);
+
+            rafId = requestAnimationFrame(animate);
+        }
+
+        // Scroll opacity fade
+        function onScroll() {
+            const scrollY = window.scrollY;
+            const fadeEnd = window.innerHeight * 0.6;
+            scrollOpacity = Math.max(0, 1 - scrollY / fadeEnd);
+        }
+
+        // Setup
+        resize();
+        window.addEventListener('resize', resize);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        rafId = requestAnimationFrame(animate);
+
+        // Cleanup on View Transition
+        document.addEventListener('astro:before-swap', () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            window.removeEventListener('resize', resize);
+            window.removeEventListener('scroll', onScroll);
+        }, { once: true });
+    }
+
+    initNodeNetwork();
+    document.addEventListener('astro:page-load', initNodeNetwork);
+</script>

@@ -1,449 +1,418 @@
 ---
 import Layout from '../components/Layout.astro';
-import ProjectCard from '../components/ProjectCard.astro';
+import CaseStudyCard from '../components/CaseStudyCard.astro';
 import { getCollection } from 'astro:content';
+import { site, social } from '../config';
 
-// Get all projects and filter for featured ones
-const allProjects = await getCollection('projects');
-const featuredProjects = allProjects.filter(project => project.data.featured);
-const recentProjects = allProjects
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 6);
-
-// Get project counts by category
-const projectCounts = {
-  ai: allProjects.filter(p => p.data.tags.includes('ai')).length,
-  gaming: allProjects.filter(p => p.data.tags.includes('gaming')).length,
-  research: allProjects.filter(p => p.data.tags.includes('research')).length,
-  codingMisc: allProjects.filter(p => p.data.tags.includes('coding-misc')).length,
-  webDev: allProjects.filter(p => p.data.tags.includes('web-dev')).length,
-  total: allProjects.length
-};
+const allCaseStudies = await getCollection('case-studies');
+const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
 ---
 
-<Layout title="Francesco Di Mise - AI, Gaming & Development Projects">
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Welcome to My Portfolio</h1>
-      <p class="hero-description">
-        Exploring the intersection of artificial intelligence, game development, and creative coding. 
-        Here you'll find my projects spanning machine learning, interactive experiences, and research.
-      </p>
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-number">{projectCounts.total}</span>
-          <span class="stat-label">Total Projects</span>
+<Layout title={`${site.name} — Product Ops & BI`}>
+    <!-- ─── HERO ─── -->
+    <section class="hero">
+        <div class="hero-eyebrow">
+            <span class="status-dot"></span>
+            <span>Open to 2026 co-op / internship</span>
         </div>
-        <div class="stat">
-          <span class="stat-number">{projectCounts.ai}</span>
-          <span class="stat-label">AI Projects</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number">{projectCounts.gaming}</span>
-          <span class="stat-label">Gaming Projects</span>
-        </div>
-        <div class="stat">
-          <span class="stat-number">{projectCounts.research}</span>
-          <span class="stat-label">Research</span>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Featured Projects Section -->
-  {featuredProjects.length > 0 && (
-    <section class="featured-section">
-      <h2>Featured Projects</h2>
-      <div class="projects-grid">
-        {featuredProjects.map((project) => (
-          <ProjectCard
-            title={project.data.title}
-            description={project.data.description}
-            tags={project.data.tags}
-            date={project.data.date}
-            status={project.data.status}
-            liveUrl={project.data.liveUrl}
-            downloadUrl={project.data.downloadUrl}
-            githubUrl={project.data.githubUrl}
-            images={project.data.images}
-            technologies={project.data.technologies}
-            embedType={project.data.embedType}
-            slug={project.slug}
-            featured={project.data.featured}
-          />
-        ))}
-      </div>
+        <h1 class="hero-name">{site.name}</h1>
+
+        <div class="hero-bio">
+            <p>
+                MS in AI candidate at Northeastern. Last summer I implemented Salesforce Agentforce
+                for a battery retailer in Latin America — designing the agent architecture and
+                automation stack while keeping engineering and client stakeholders synchronized
+                across languages and time zones.
+            </p>
+            <p>
+                I'm targeting 2026 roles in <strong>Product Operations</strong> and
+                <strong>Business Intelligence</strong> — places where translating between
+                technical details and business reality is the actual job.
+            </p>
+        </div>
+
+        <div class="hero-actions">
+            <a href="/work" class="btn-primary">View my work &rarr;</a>
+            <a href="#contact" class="btn-secondary">Get in touch</a>
+        </div>
+
+        <div class="hero-chips">
+            <span>Systems thinking</span>
+            <span>Cross-functional coordination</span>
+            <span>Process documentation</span>
+            <span>Data analysis</span>
+        </div>
     </section>
-  )}
 
-  <!-- Recent Projects Section -->
-  <section class="recent-section">
-    <div class="section-header">
-      <h2>Recent Projects</h2>
-      <a href="/all-projects" class="view-all-btn">View All Projects →</a>
-    </div>
-    <div class="projects-grid">
-      {recentProjects.map((project) => (
-        <ProjectCard
-          title={project.data.title}
-          description={project.data.description}
-          tags={project.data.tags}
-          date={project.data.date}
-          status={project.data.status}
-          liveUrl={project.data.liveUrl}
-          downloadUrl={project.data.downloadUrl}
-          githubUrl={project.data.githubUrl}
-          images={project.data.images}
-          technologies={project.data.technologies}
-          embedType={project.data.embedType}
-          slug={project.slug}
-          featured={project.data.featured}
-        />
-      ))}
-    </div>
-  </section>
+    <!-- ─── SELECTED WORK ─── -->
+    <section class="work-section reveal">
+        <div class="section-header">
+            <div>
+                <h2>Selected work</h2>
+                <p class="section-sub">Case studies — context, decisions, outcomes.</p>
+            </div>
+            <a href="/work" class="view-all">All work &rarr;</a>
+        </div>
 
-  <!-- Quick Navigation Section -->
-  <section class="nav-section">
-    <h2>Explore by Category</h2>
-    <div class="category-cards">
-      <a href="/ai" class="category-card">
-        <div class="category-icon">🤖</div>
-        <h3>AI Projects</h3>
-        <p>Machine learning, neural networks, and intelligent systems</p>
-        <span class="project-count">{projectCounts.ai} projects</span>
-      </a>
-      
-      <a href="/gaming" class="category-card">
-        <div class="category-icon">🎮</div>
-        <h3>Gaming</h3>
-        <p>Game development, interactive experiences, and game AI</p>
-        <span class="project-count">{projectCounts.gaming} projects</span>
-      </a>
-      
-      <a href="/research" class="category-card">
-        <div class="category-icon">🔬</div>
-        <h3>Research</h3>
-        <p>Academic projects, experiments, and explorations</p>
-        <span class="project-count">{projectCounts.research} projects</span>
-      </a>
-      
-      <a href="/coding-misc" class="category-card">
-        <div class="category-icon">💻</div>
-        <h3>Coding Misc</h3>
-        <p>WebGL animations, creative coding, and experiments</p>
-        <span class="project-count">{projectCounts.codingMisc} projects</span>
-      </a>
-    </div>
-  </section>
+        <div class="case-studies-grid">
+            {sorted.map((study) => (
+                <CaseStudyCard
+                    title={study.data.title}
+                    subtitle={study.data.subtitle}
+                    company={study.data.company}
+                    role={study.data.role}
+                    timeline={study.data.timeline}
+                    tags={study.data.tags}
+                    outcomes={study.data.outcomes}
+                    slug={study.slug}
+                />
+            ))}
+        </div>
+    </section>
+
+    <!-- ─── ABOUT STRIP ─── -->
+    <section class="about-strip reveal">
+        <div class="about-grid">
+            <div class="about-block">
+                <span class="about-label">Education</span>
+                <p>MS Artificial Intelligence<br/>Northeastern University &middot; 2027</p>
+                <p class="about-sub">BS Computer Science + BS Interactive Media & Game Design &middot; WPI</p>
+            </div>
+            <div class="about-block">
+                <span class="about-label">Currently</span>
+                <p>Building an AI assistant platform for a family distribution business across WhatsApp and phone channels.</p>
+            </div>
+            <div class="about-block">
+                <span class="about-label">Outside work</span>
+                <p>Writing <a href="https://www.royalroad.com/fiction/41035/beesekai" target="_blank" rel="noopener" class="inline-link"><em>Beesekai</em></a> — a webnovel on Royal Road with 166+ chapters over five years.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ─── CONTACT ─── -->
+    <section class="contact-section reveal" id="contact">
+        <div class="contact-inner">
+            <h2>Let's talk</h2>
+            <p>
+                Looking for a 2026 co-op or internship where I can bring both analytical
+                rigor and cross-functional judgment. Reach out if that sounds useful.
+            </p>
+            <div class="contact-links">
+                <a href={`mailto:${social.email}`} class="contact-link primary-link">
+                    <span class="contact-icon">&#9993;</span>
+                    {social.email}
+                </a>
+                <a href={social.linkedin} target="_blank" rel="noopener" class="contact-link">
+                    <span class="contact-icon">in</span>
+                    LinkedIn
+                </a>
+                <a href={social.github} target="_blank" rel="noopener" class="contact-link">
+                    <span class="contact-icon">gh</span>
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
 </Layout>
 
 <style>
- .hero {
-    text-align: center;
-    padding: 4rem 0;
-    background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);
-    color: var(--text);
-    margin: -2rem -20px 3rem -20px;
-    position: relative;
-    overflow: hidden;
-    border-radius: 24px;
-  }
-  
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="25" cy="75" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="75" cy="25" r="1" fill="%23ffffff" opacity="0.03"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    pointer-events: none;
-    filter: blur(1px);
-  }
-  
-  .hero-content {
-    position: relative;
-    z-index: 1;
-  }
-  
-  .hero-content h1 {
-    font-size: 3.5rem;
-    margin-bottom: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
-  }
-  
-  .hero-description {
-    font-size: 1.25rem;
-    max-width: 650px;
-    margin: 0 auto 2.5rem auto;
-    opacity: 0.9;
-    line-height: 1.6;
-    font-weight: 400;
-  }
-  
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 3rem;
-    margin-top: 2rem;
-  }
-  
-  .stat {
-    text-align: center;
-    padding: 1rem 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-  
-  .stat-number {
-    display: block;
-    font-size: 2.5rem;
-    font-weight: 700;
-    line-height: 1;
-    color: var(--text);
-  }
-  
-  .stat-label {
-    font-size: 0.9rem;
-    opacity: 0.8;
-    margin-top: 0.25rem;
-    font-weight: 500;
-  }
-  
-  .featured-section,
-  .recent-section,
-  .nav-section {
-    margin: 4rem 0;
-  }
-  
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-  }
-  
-  .section-header h2, .nav-section h2, .featured-section h2 {
-    font-size: 2.25rem;
-    margin: 0;
-    color: var(--text);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-  }
-  
-  .view-all-btn {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    border: 1px solid rgba(175, 203, 207, 0.3);
-  }
-  
-  .view-all-btn:hover {
-    color: var(--text);
-    background: rgba(175, 203, 207, 0.1);
-    transform: translateX(4px);
-  }
-  
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 2rem;
-    margin: 2rem 0;
-  }
-  
-  .nav-section h2 {
-    text-align: center;
-    font-size: 2.25rem;
-    margin-bottom: 2.5rem;
-    color: var(--text);
-  }
-  
-  .category-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-  }
-  
-  .category-card {
-    background: linear-gradient(135deg, var(--card-bg) 0%, rgba(62, 66, 104, 0.6) 100%);
-    border: 2px solid rgba(175, 203, 207, 0.2);
-    border-radius: 20px;
-    padding: 2.5rem 2rem;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.4s ease;
-    text-align: center;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 0 0 1px rgba(175, 203, 207, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    position: relative;
-    overflow: hidden;
-  }
-  
-  .category-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, transparent 0%, rgba(175, 203, 207, 0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .category-card::after {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    border-radius: 22px;
-    z-index: -1;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-  }
-
-  .category-card:hover::before {
-    opacity: 1;
-  }
-  
-  .category-card:hover::after {
-    opacity: 0.6;
-  }
-  
-  .category-card:hover {
-    transform: translateY(-12px) scale(1.02);
-    border-color: transparent;
-    box-shadow: 
-        0 20px 60px rgba(0, 0, 0, 0.4),
-        0 8px 40px rgba(175, 203, 207, 0.2);
-  }
-  
-  .category-icon {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    display: block;
-    filter: drop-shadow(0 4px 12px rgba(175, 203, 207, 0.3));
-    transition: all 0.4s ease;
-  }
-  
-  .category-card:hover .category-icon {
-    transform: scale(1.1) translateY(-4px);
-    filter: drop-shadow(0 8px 20px rgba(175, 203, 207, 0.5));
-  }
-  
-  .category-card h3 {
-    margin: 0 0 0.75rem 0;
-    color: var(--text);
-    font-size: 1.4rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.4s ease;
-  }
-
-  .category-card:hover h3 {
-    color: var(--primary);
-    transform: translateY(-2px);
-  }
-  
-  .category-card p {
-    color: rgba(220, 239, 243, 0.7);
-    margin: 0 0 1.5rem 0;
-    line-height: 1.6;
-    font-size: 0.95rem;
-    transition: all 0.4s ease;
-  }
-
-  .category-card:hover p {
-    color: rgba(220, 239, 243, 0.9);
-  }
-  
-  .project-count {
-    display: inline-block;
-    background: rgba(175, 203, 207, 0.15);
-    color: var(--primary);
-    padding: 0.5rem 1.25rem;
-    border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    border: 1px solid rgba(175, 203, 207, 0.2);
-    transition: all 0.4s ease;
-    box-shadow: 0 2px 8px rgba(175, 203, 207, 0.1);
-  }
-
-  .category-card:hover .project-count {
-    background: rgba(175, 203, 207, 0.25);
-    color: var(--text);
-    border-color: var(--primary);
-    box-shadow: 0 4px 16px rgba(175, 203, 207, 0.3);
-    transform: translateY(-2px);
-  }
-  
-  @media (max-width: 768px) {
+    /* ─── HERO ─── */
     .hero {
-      padding: 3rem 1rem;
+        padding: 4rem 0 5rem;
+        max-width: 720px;
     }
-    
-    .hero-content h1 {
-      font-size: 2.5rem;
+
+    .hero-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 2rem;
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.78rem;
+        color: var(--text-muted);
     }
-    
-    .hero-description {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
+
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--status-green);
+        box-shadow: 0 0 8px var(--status-green-glow);
+        animation: pulse 2s ease-in-out infinite;
     }
-    
-    .stats {
-      gap: 1rem;
-      flex-wrap: wrap;
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.35; }
     }
-    
-    .stat {
-      padding: 0.75rem 1rem;
-      min-width: 120px;
+
+    .hero-name {
+        font-size: clamp(2.5rem, 6vw, 4rem);
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.03em;
+        line-height: 1.05;
+        margin-bottom: 2rem;
     }
-    
-    .stat-number {
-      font-size: 2rem;
+
+    .hero-bio {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2.5rem;
     }
-    
-    .projects-grid {
-      grid-template-columns: 1fr;
+
+    .hero-bio p {
+        font-size: 1.05rem;
+        color: var(--text-soft);
+        line-height: 1.7;
     }
-    
+
+    .hero-bio strong {
+        color: var(--primary);
+        font-weight: 600;
+    }
+
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.7rem 1.4rem;
+        background: var(--primary);
+        color: var(--background);
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--primary);
+        transition: all var(--duration-normal) var(--ease-out-expo);
+    }
+
+    .btn-primary:hover {
+        background: var(--text);
+        border-color: var(--text);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:active {
+        transform: translateY(0) scale(0.97);
+        box-shadow: none;
+    }
+
+    .btn-secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.7rem 1.4rem;
+        background: transparent;
+        color: var(--text);
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-decoration: none;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-strong);
+        transition: all var(--duration-normal) var(--ease-out-expo);
+    }
+
+    .btn-secondary:hover {
+        background: rgba(175, 203, 207, 0.07);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .btn-secondary:active {
+        transform: scale(0.97);
+    }
+
+    .hero-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .hero-chips span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        padding: 0.28rem 0.7rem;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-family: 'IBM Plex Mono', monospace;
+    }
+
+    /* ─── WORK SECTION ─── */
+    .work-section {
+        padding: 4rem 0;
+        border-top: 1px solid var(--border);
+    }
+
     .section-header {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 3rem;
     }
-    
-    .section-header h2, .nav-section h2, .featured-section h2 {
-      font-size: 1.8rem;
+
+    .section-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.25rem;
     }
-    
-    .category-cards {
-      grid-template-columns: 1fr;
+
+    .section-sub {
+        color: var(--text-muted);
+        font-size: 0.88rem;
     }
-    
-    .category-card {
-      padding: 2rem 1.5rem;
+
+    .view-all {
+        color: var(--primary);
+        text-decoration: none;
+        font-size: 0.84rem;
+        font-weight: 600;
+        transition: color 0.2s ease;
+        white-space: nowrap;
+        margin-top: 0.25rem;
     }
-  }
+    .view-all:hover { color: var(--text); }
+
+    .case-studies-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.5rem;
+    }
+
+    /* ─── ABOUT STRIP ─── */
+    .about-strip {
+        padding: 3.5rem 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+    }
+
+    .about-block {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .about-label {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent);
+        margin-bottom: 0.2rem;
+    }
+
+    .about-block p {
+        color: var(--text-soft);
+        font-size: 0.88rem;
+        line-height: 1.55;
+    }
+
+    .about-sub {
+        color: var(--text-muted) !important;
+        font-size: 0.8rem !important;
+        margin-top: 0.2rem;
+    }
+
+    .inline-link {
+        color: inherit;
+        text-decoration: underline;
+        text-decoration-color: var(--border-strong);
+        text-underline-offset: 3px;
+        transition: text-decoration-color 0.2s ease;
+    }
+    .inline-link:hover {
+        text-decoration-color: var(--primary);
+    }
+
+    .about-block em {
+        color: var(--primary);
+        font-style: italic;
+    }
+
+    /* ─── CONTACT ─── */
+    .contact-section {
+        padding: 4rem 0;
+        border-top: 1px solid var(--border);
+    }
+
+    .contact-inner {
+        max-width: 580px;
+    }
+
+    .contact-section h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+        margin-bottom: 1rem;
+    }
+
+    .contact-section p {
+        color: var(--text-soft);
+        font-size: 0.95rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+    }
+
+    .contact-links {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .contact-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.6rem 1.1rem;
+        text-decoration: none;
+        color: var(--text);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-md);
+        font-size: 0.84rem;
+        font-weight: 500;
+        transition: all var(--duration-normal) var(--ease-out-expo);
+    }
+
+    .contact-link:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+        background: rgba(175, 203, 207, 0.05);
+        transform: translateY(-2px);
+    }
+
+    .contact-link.primary-link {
+        background: rgba(175, 203, 207, 0.07);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .contact-icon {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.78rem;
+        color: inherit;
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+        .hero { padding: 3rem 0 4rem; }
+        .hero-name { font-size: 2.5rem; }
+        .about-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+        .case-studies-grid { grid-template-columns: 1fr; }
+        .section-header { flex-direction: column; gap: 0.75rem; }
+    }
 </style>
