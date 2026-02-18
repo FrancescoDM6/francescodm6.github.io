@@ -25,3 +25,19 @@ pnpm-debug.log*
 .idea/
 
 .vscode/
+
+.sisyphus/
+
+.agent/
+
+.claude/
+
+.gemini/
+
+.cursor/
+
+.antigravity/
+
+.github/
+
+.codex/
