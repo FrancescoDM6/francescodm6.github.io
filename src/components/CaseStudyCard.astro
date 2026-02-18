@@ -2,15 +2,30 @@
 export interface Props {
     title: string;
     subtitle: string;
+    summary?: string;
     company: string;
     role: string;
     timeline: string;
     tags: string[];
+    status?: 'draft' | 'published' | 'archived';
+    locale?: string;
     outcomes?: string[];
     slug: string;
 }
 
-const { title, subtitle, company, role, timeline, tags, outcomes, slug } = Astro.props;
+const {
+    title,
+    subtitle,
+    summary,
+    company,
+    role,
+    timeline,
+    tags,
+    status,
+    locale,
+    outcomes,
+    slug,
+} = Astro.props;
 ---
 
 <a href={`/work/${slug}`} class="case-study-card">
@@ -19,10 +34,22 @@ const { title, subtitle, company, role, timeline, tags, outcomes, slug } = Astro
             <span class="company">{company}</span>
             <span class="sep">&middot;</span>
             <span class="timeline">{timeline}</span>
+            {locale && (
+                <>
+                    <span class="sep">&middot;</span>
+                    <span class="locale">{locale}</span>
+                </>
+            )}
+            {status && (
+                <>
+                    <span class="sep">&middot;</span>
+                    <span class:list={[`status`, `status--${status}`]}>{status}</span>
+                </>
+            )}
         </div>
 
         <h3 class="card-title">{title}</h3>
-        <p class="card-subtitle">{subtitle}</p>
+        <p class="card-subtitle">{summary ?? subtitle}</p>
 
         {outcomes && outcomes.length > 0 && (
             <ul class="outcomes">
@@ -87,6 +114,19 @@ const { title, subtitle, company, role, timeline, tags, outcomes, slug } = Astro
         color: var(--text-muted);
     }
     .sep { color: var(--border-strong); }
+
+    .status,
+    .locale {
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-size: 0.68rem;
+    }
+
+    .status {
+        color: var(--accent);
+    }
+
+    .status--published { color: var(--status-green); }
 
     .card-title {
         font-size: 1.3rem;

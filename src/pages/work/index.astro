@@ -5,7 +5,29 @@ import { getCollection } from 'astro:content';
 import { site } from '../../config';
 
 const allCaseStudies = await getCollection('case-studies');
-const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
+const sorted = allCaseStudies
+    .filter((study) => study.data.status === 'published')
+    .sort((a, b) => a.data.order - b.data.order);
+
+const listJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: sorted.map((study, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+            '@type': 'CreativeWork',
+            '@id': study.data.id ?? study.slug,
+            url: `${site.url}/work/${study.slug}`,
+            name: study.data.title,
+            abstract: study.data.summary ?? study.data.subtitle,
+            inLanguage: study.data.locale,
+            datePublished: study.data.publishedAt?.toISOString(),
+            dateModified: study.data.updatedAt?.toISOString(),
+            keywords: study.data.keywords ?? study.data.tags,
+        },
+    })),
+};
 ---
 
 <Layout title={`Work — ${site.name}`} description="Case studies in product operations, business intelligence, and AI implementation.">
@@ -21,16 +43,21 @@ const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
                     <CaseStudyCard
                         title={study.data.title}
                         subtitle={study.data.subtitle}
+                        summary={study.data.summary}
                         company={study.data.company}
                         role={study.data.role}
                         timeline={study.data.timeline}
                         tags={study.data.tags}
+                        status={study.data.status}
+                        locale={study.data.locale}
                         outcomes={study.data.outcomes}
                         slug={study.slug}
                     />
                 </div>
             ))}
         </div>
+
+        <script type="application/ld+json" set:html={JSON.stringify(listJsonLd)} />
     </section>
 </Layout>
 
