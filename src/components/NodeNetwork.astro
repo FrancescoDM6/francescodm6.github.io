@@ -29,7 +29,39 @@
 </style>
 
 <script>
+    type NodeNetworkRuntime = {
+        initialized: boolean;
+        pageLoadBound: boolean;
+        teardown: (() => void) | null;
+        onPageLoad: (() => void) | null;
+    };
+
+    const NODE_NETWORK_RUNTIME_KEY = '__nodeNetworkRuntime';
+
+    function getNodeNetworkRuntime(): NodeNetworkRuntime {
+        const windowWithRuntime = window as Window & {
+            [NODE_NETWORK_RUNTIME_KEY]?: NodeNetworkRuntime;
+        };
+
+        if (!windowWithRuntime[NODE_NETWORK_RUNTIME_KEY]) {
+            windowWithRuntime[NODE_NETWORK_RUNTIME_KEY] = {
+                initialized: false,
+                pageLoadBound: false,
+                teardown: null,
+                onPageLoad: null,
+            };
+        }
+
+        return windowWithRuntime[NODE_NETWORK_RUNTIME_KEY]!;
+    }
+
     function initNodeNetwork() {
+        const runtime = getNodeNetworkRuntime();
+
+        if (runtime.initialized) {
+            runtime.teardown?.();
+        }
+
         const canvas = document.getElementById('node-network') as HTMLCanvasElement | null;
         if (!canvas) return;
 
@@ -68,6 +100,7 @@
         let height = 0;
         let rafId: number | null = null;
         let scrollOpacity = 1;
+        let disposed = false;
 
         // Grid dimensions
         let cols = 0;
@@ -231,7 +264,7 @@
         }
 
         function animate() {
-            if (!ctx) return;
+            if (!ctx || disposed) return;
             ctx.clearRect(0, 0, width, height);
 
             // Spawn new traces to maintain count
@@ -258,19 +291,52 @@
             scrollOpacity = Math.max(0, 1 - scrollY / fadeEnd);
         }
 
+        function teardown() {
+            if (disposed) return;
+
+            disposed = true;
+
+            if (rafId !== null) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+
+            window.removeEventListener('resize', resize);
+            window.removeEventListener('scroll', onScroll);
+            document.removeEventListener('astro:before-swap', onBeforeSwap);
+
+            traces = [];
+            scrollOpacity = 1;
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            runtime.initialized = false;
+            if (runtime.teardown === teardown) {
+                runtime.teardown = null;
+            }
+        }
+
+        function onBeforeSwap() {
+            teardown();
+        }
+
         // Setup
         resize();
         window.addEventListener('resize', resize);
         window.addEventListener('scroll', onScroll, { passive: true });
-        rafId = requestAnimationFrame(animate);
+        document.addEventListener('astro:before-swap', onBeforeSwap);
 
-        // Cleanup on View Transition
-        document.addEventListener('astro:before-swap', () => {
-            if (rafId !== null) cancelAnimationFrame(rafId);
-            window.removeEventListener('resize', resize);
-            window.removeEventListener('scroll', onScroll);
-        }, { once: true });
+        runtime.initialized = true;
+        runtime.teardown = teardown;
+
+        rafId = requestAnimationFrame(animate);
     }
 
-    document.addEventListener('astro:page-load', initNodeNetwork);
+    const runtime = getNodeNetworkRuntime();
+
+    if (!runtime.pageLoadBound) {
+        runtime.pageLoadBound = true;
+        runtime.onPageLoad = initNodeNetwork();
+        document.addEventListener('astro:page-load', initNodeNetwork);
+    }
 </script>
