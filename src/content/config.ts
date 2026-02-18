@@ -11,7 +11,6 @@ const caseStudiesCollection = defineCollection({
     company: z.string(),
     role: z.string(),
     timeline: z.string(),
-    updatedAt: z.coerce.date().optional(),
     tags: z.array(z.string()),
     keywords: z.array(z.string()).optional(),
     locale: z.string().default('en-US'),
