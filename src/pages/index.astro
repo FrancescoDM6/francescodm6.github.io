@@ -5,7 +5,29 @@ import { getCollection } from 'astro:content';
 import { site, social } from '../config';
 
 const allCaseStudies = await getCollection('case-studies');
-const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
+const sorted = allCaseStudies
+    .filter((study) => study.data.status === 'published')
+    .sort((a, b) => a.data.order - b.data.order);
+
+const caseStudiesJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: sorted.map((study, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        item: {
+            '@type': 'CreativeWork',
+            '@id': study.data.id ?? study.slug,
+            url: `${site.url}/work/${study.slug}`,
+            name: study.data.title,
+            abstract: study.data.summary ?? study.data.subtitle,
+            inLanguage: study.data.locale,
+            datePublished: study.data.publishedAt?.toISOString(),
+            dateModified: study.data.updatedAt?.toISOString(),
+            keywords: study.data.keywords ?? study.data.tags,
+        },
+    })),
+};
 ---
 
 <Layout title={`${site.name} — Product Ops & BI`}>
@@ -60,10 +82,13 @@ const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
                 <CaseStudyCard
                     title={study.data.title}
                     subtitle={study.data.subtitle}
+                    summary={study.data.summary}
                     company={study.data.company}
                     role={study.data.role}
                     timeline={study.data.timeline}
                     tags={study.data.tags}
+                    status={study.data.status}
+                    locale={study.data.locale}
                     outcomes={study.data.outcomes}
                     slug={study.slug}
                 />
@@ -114,6 +139,7 @@ const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
             </div>
         </div>
     </section>
+    <script type="application/ld+json" set:html={JSON.stringify(caseStudiesJsonLd)} />
 </Layout>
 
 <style>

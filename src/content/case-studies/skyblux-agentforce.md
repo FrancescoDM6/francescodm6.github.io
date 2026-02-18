@@ -1,10 +1,18 @@
 ---
+id: "skyblux-agentforce"
+slug: "skyblux-agentforce"
 title: "Implementing Salesforce Agentforce for a LATAM Battery Retailer"
 subtitle: "End-to-end AI agent deployment at a mid-size distributor — from architecture to client alignment, across two languages and two teams."
+summary: "Implemented a production Salesforce Agentforce assistant for a LATAM battery distributor, combining architecture design, workflow automation, and bilingual stakeholder alignment."
 company: "Skyblux Solutions"
 role: "AI Implementation Intern"
 timeline: "Summer 2024"
+status: "published"
+locale: "en-US"
+publishedAt: "2024-09-01"
+updatedAt: "2024-09-15"
 tags: ["Product Operations", "Salesforce", "AI Implementation", "Stakeholder Management", "Process Design"]
+keywords: ["salesforce agentforce", "conversation architecture", "cross-functional alignment", "bilingual delivery", "workflow automation"]
 outcomes:
   - "Delivered a working Agentforce deployment within the internship timeline"
   - "Maintained alignment across a bilingual engineering/client split throughout the project"

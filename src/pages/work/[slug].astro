@@ -5,17 +5,44 @@ import { site } from '../../config';
 
 export async function getStaticPaths() {
     const studies = await getCollection('case-studies');
-    return studies.map((study) => ({
-        params: { slug: study.slug },
-        props: { study },
-    }));
+    return studies
+        .filter((study) => study.data.status === 'published')
+        .map((study) => ({
+            params: { slug: study.slug },
+            props: { study },
+        }));
 }
 
 const { study } = Astro.props;
 const { Content } = await study.render();
+
+const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    '@id': study.data.id ?? study.slug,
+    headline: study.data.title,
+    description: study.data.summary ?? study.data.subtitle,
+    abstract: study.data.summary ?? study.data.subtitle,
+    datePublished: study.data.publishedAt?.toISOString(),
+    dateModified: study.data.updatedAt?.toISOString(),
+    inLanguage: study.data.locale,
+    keywords: study.data.keywords ?? study.data.tags,
+    url: `${site.url}/work/${study.slug}`,
+    about: study.data.tags,
+    author: {
+        '@type': 'Person',
+        name: site.name,
+    },
+};
+
+const formatDate = (date?: Date) =>
+    date ? new Intl.DateTimeFormat(study.data.locale, { dateStyle: 'medium' }).format(date) : null;
+
+const publishedLabel = formatDate(study.data.publishedAt);
+const updatedLabel = formatDate(study.data.updatedAt);
 ---
 
-<Layout title={`${study.data.title} — ${site.name}`} description={study.data.subtitle}>
+<Layout title={`${study.data.title} — ${site.name}`} description={study.data.summary ?? study.data.subtitle}>
     <div class="case-study-page">
         <!-- Back nav -->
         <div class="back-row">
@@ -31,7 +58,7 @@ const { Content } = await study.render();
             </div>
 
             <h1>{study.data.title}</h1>
-            <p class="study-subtitle">{study.data.subtitle}</p>
+            <p class="study-subtitle">{study.data.summary ?? study.data.subtitle}</p>
 
             <div class="study-tags">
                 {study.data.tags.map((tag) => (
@@ -54,6 +81,26 @@ const { Content } = await study.render();
                 <span class="stat-label">Timeline</span>
                 <span class="stat-value">{study.data.timeline}</span>
             </div>
+            {publishedLabel && (
+                <div class="stat-item">
+                    <span class="stat-label">Published</span>
+                    <span class="stat-value">{publishedLabel}</span>
+                </div>
+            )}
+            {updatedLabel && (
+                <div class="stat-item">
+                    <span class="stat-label">Updated</span>
+                    <span class="stat-value">{updatedLabel}</span>
+                </div>
+            )}
+            <div class="stat-item">
+                <span class="stat-label">Status</span>
+                <span class="stat-value">{study.data.status}</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Locale</span>
+                <span class="stat-value">{study.data.locale}</span>
+            </div>
         </div>
 
         <!-- Key outcomes -->
@@ -72,6 +119,8 @@ const { Content } = await study.render();
         <div class="study-content reveal">
             <Content />
         </div>
+
+        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
 
         <!-- Footer nav -->
         <div class="study-footer">
@@ -150,7 +199,7 @@ const { Content } = await study.render();
     /* Stats */
     .study-stats {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
         gap: 1px;
         background: var(--border);
         border: 1px solid var(--border);
