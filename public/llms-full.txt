@@ -1,0 +1,35 @@
+# LLM Full Context: Case Studies
+
+Canonical root: https://francescodm6.github.io
+
+## Implementing Salesforce Agentforce for a LATAM Battery Retailer
+title: Implementing Salesforce Agentforce for a LATAM Battery Retailer
+summary: End-to-end AI agent deployment at a mid-size distributor — from architecture to client alignment, across two languages and two teams. Skyblux Solutions is a consulting firm specializing in Salesforce implementations for Latin American clients. My internship placed me on a project implementing Salesforce Agentforce for a mid-size battery distributor — giving them an AI-driven agent for customer service and sales support workflows.
+role: AI Implementation Intern
+company: Skyblux Solutions
+timeline: Summer 2024
+key outcomes:
+- Delivered a working Agentforce deployment within the internship timeline
+- Maintained alignment across a bilingual engineering/client split throughout the project
+- Designed conversation architecture and automation stack from first principles
+source URL: https://francescodm6.github.io/work/skyblux-agentforce
+
+## Business Intelligence Dashboard
+title: Business Intelligence Dashboard
+summary: An end-to-end data project: sourcing real-world data, building a clean pipeline, and delivering an interactive dashboard with a written analysis.
+role: Data Analyst
+company: Personal Project
+timeline: 2025
+key outcomes:
+- Outcomes will be published after the engagement wraps and details can be shared.
+source URL: https://francescodm6.github.io/work/bi-dashboard
+
+## AI Assistant Platform for a Family Distribution Business
+title: AI Assistant Platform for a Family Distribution Business
+summary: Scoping and coordinating a multi-channel AI implementation across WhatsApp and phone — managing family stakeholders who don't know what they're asking for yet.
+role: Product & Implementation Lead
+company: Family Business
+timeline: 2025-2026
+key outcomes:
+- Outcomes will be published after the engagement wraps and details can be shared.
+source URL: https://francescodm6.github.io/work/family-ai-platform

@@ -1,47 +1,36 @@
-# Astro Starter Kit: Minimal
+# francescodm6.github.io
+
+Personal portfolio built with Astro.
+
+## LLM context files
+
+The project generates two machine-readable files in `public/`:
+
+- `public/llms.txt`: concise site index (purpose, key pages, canonical URLs)
+- `public/llms-full.txt`: normalized content blocks for case studies
+
+## Regenerating LLM files
+
+Whenever content changes, run:
 
 ```sh
-npm create astro@latest -- --template minimal
+npm run generate:llms
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+This command regenerates **both** `llms.txt` and `llms-full.txt`, and it is also wired into `prebuild`, so `npm run build` keeps both files in sync automatically.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Making it adaptable as you add more content
 
-## 🚀 Project Structure
+The generator is intentionally config-driven.
 
-Inside of your Astro project, you'll see the following folders and files:
+1. Open `scripts/generate-llms-full.mjs`.
+2. Add a new object in `CONTENT_SOURCES` with:
+   - `id`
+   - `label`
+   - `directory` (for example `src/content/articles`)
+   - `output` (for example `public/llms-articles.txt`)
+   - `routePrefix` (for example `/articles/`)
+   - `itemLabel` (for example `Article`)
+3. Run `npm run generate:llms`.
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+No parser changes are required as long as the markdown files use frontmatter fields like `title`, `subtitle`, `role`, `company`, `timeline`, optional `outcomes`, and optional `order`.
