@@ -1,5 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function normalizePathname(pathname = '/') {
   if (!pathname) return '/';
@@ -32,7 +33,7 @@ export default function sitemap() {
       'astro:config:done': ({ config }) => {
         site = config.site;
       },
-      'astro:build:done': async ({ dir, pages = [] }) => {
+      'astro:build:done': async ({ dir, pages }) => {
         if (!site) {
           return;
         }
@@ -43,9 +44,10 @@ export default function sitemap() {
           .map((pathname) => toAbsoluteUrl(site, pathname));
 
         const uniqueUrls = [...new Set(urls)];
+        const dirPath = fileURLToPath(dir);
 
-        const sitemapPath = join(dir.pathname, 'sitemap-0.xml');
-        const indexPath = join(dir.pathname, 'sitemap-index.xml');
+        const sitemapPath = join(dirPath, 'sitemap-0.xml');
+        const indexPath = join(dirPath, 'sitemap-index.xml');
 
         await fs.writeFile(sitemapPath, renderUrlSet(uniqueUrls), 'utf8');
         await fs.writeFile(
