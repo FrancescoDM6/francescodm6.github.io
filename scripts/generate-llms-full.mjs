@@ -1,6 +1,8 @@
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import matter from 'gray-matter';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,54 +43,54 @@ function toCanonicalUrl(routePath) {
   return `${siteBase}${normalized}`;
 }
 
-function parseFrontmatter(frontmatterText) {
-  const data = {};
-  let activeListKey = null;
+// function parseFrontmatter(frontmatterText) {
+//   const data = {};
+//   let activeListKey = null;
 
-  for (const rawLine of frontmatterText.split('\n')) {
-    const line = rawLine.trimEnd();
-    if (!line.trim()) continue;
+//   for (const rawLine of frontmatterText.split('\n')) {
+//     const line = rawLine.trimEnd();
+//     if (!line.trim()) continue;
 
-    const listItem = line.match(/^\s*-\s+(.+)$/);
-    if (listItem && activeListKey) {
-      if (!Array.isArray(data[activeListKey])) data[activeListKey] = [];
-      data[activeListKey].push(stripQuotes(listItem[1].trim()));
-      continue;
-    }
+//     const listItem = line.match(/^\s*-\s+(.+)$/);
+//     if (listItem && activeListKey) {
+//       if (!Array.isArray(data[activeListKey])) data[activeListKey] = [];
+//       data[activeListKey].push(stripQuotes(listItem[1].trim()));
+//       continue;
+//     }
 
-    const keyValue = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
-    if (!keyValue) continue;
+//     const keyValue = line.match(/^([a-zA-Z0-9_-]+):\s*(.*)$/);
+//     if (!keyValue) continue;
 
-    const [, key, rawValue] = keyValue;
-    const value = rawValue.trim();
+//     const [, key, rawValue] = keyValue;
+//     const value = rawValue.trim();
 
-    if (!value) {
-      activeListKey = key;
-      if (!Array.isArray(data[key])) data[key] = [];
-      continue;
-    }
+//     if (!value) {
+//       activeListKey = key;
+//       if (!Array.isArray(data[key])) data[key] = [];
+//       continue;
+//     }
 
-    activeListKey = null;
+//     activeListKey = null;
 
-    if (value.startsWith('[') && value.endsWith(']')) {
-      data[key] = value
-        .slice(1, -1)
-        .split(',')
-        .map((item) => stripQuotes(item.trim()))
-        .filter(Boolean);
-      continue;
-    }
+//     if (value.startsWith('[') && value.endsWith(']')) {
+//       data[key] = value
+//         .slice(1, -1)
+//         .split(',')
+//         .map((item) => stripQuotes(item.trim()))
+//         .filter(Boolean);
+//       continue;
+//     }
 
-    if (/^\d+$/.test(value)) {
-      data[key] = Number(value);
-      continue;
-    }
+//     if (/^\d+$/.test(value)) {
+//       data[key] = Number(value);
+//       continue;
+//     }
 
-    data[key] = stripQuotes(value);
-  }
+//     data[key] = stripQuotes(value);
+//   }
 
-  return data;
-}
+//   return data;
+// }
 
 function extractFirstParagraph(body) {
   const normalized = body.replace(/\r\n/g, '\n').trim();
@@ -108,13 +110,14 @@ function extractFirstParagraph(body) {
 
 function parseMarkdownEntry(filePath, source) {
   const raw = readFileSync(filePath, 'utf8');
-  const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
-  if (!match) {
-    throw new Error(`Missing frontmatter in ${filePath}`);
-  }
+  // const match = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  // if (!match) {
+  //   throw new Error(`Missing frontmatter in ${filePath}`);
+  // }
 
-  const [, frontmatterText, body] = match;
-  const data = parseFrontmatter(frontmatterText);
+  // const [, frontmatterText, body] = match;
+  // const data = parseFrontmatter(frontmatterText);
+  const { data, content: body } = matter(raw);
   const slug = path.basename(filePath, '.md');
 
   const paragraphFromBody = extractFirstParagraph(body);
@@ -200,7 +203,10 @@ function buildIndex(allEntries) {
     '',
     'Machine-readable resources:',
     `- LLM index (this file): ${toCanonicalUrl('/llms.txt')}`,
-    `- LLM full context (case studies): ${toCanonicalUrl('/llms-full.txt')}`,
+    ...CONTENT_SOURCES.map((source) => {
+      const filename = path.basename(source.output);
+      return `- ${source.label}: ${toCanonicalUrl(`/${filename}`)}`;
+    }),
     '',
   ];
 

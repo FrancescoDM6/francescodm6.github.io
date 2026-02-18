@@ -13,4 +13,4 @@ Key pages:
 
 Machine-readable resources:
 - LLM index (this file): https://francescodm6.github.io/llms.txt
-- LLM full context (case studies): https://francescodm6.github.io/llms-full.txt
+- Case Studies: https://francescodm6.github.io/llms-full.txt

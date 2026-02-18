@@ -11,6 +11,7 @@
     "prebuild": "npm run generate:llms"
   },
   "dependencies": {
-    "astro": "^5.8.0"
+    "astro": "^5.8.0",
+    "gray-matter": "^4.0.3"
   }
 }
