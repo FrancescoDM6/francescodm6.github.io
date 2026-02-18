@@ -1,0 +1,70 @@
+---
+import Layout from '../../components/Layout.astro';
+import CaseStudyCard from '../../components/CaseStudyCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../config';
+
+const allCaseStudies = await getCollection('case-studies');
+const sorted = allCaseStudies.sort((a, b) => a.data.order - b.data.order);
+---
+
+<Layout title={`Work — ${site.name}`} description="Case studies in product operations, business intelligence, and AI implementation.">
+    <section class="work-page">
+        <header class="work-header">
+            <h1>Work</h1>
+            <p>Case studies — context, decisions, outcomes.</p>
+        </header>
+
+        <div class="case-studies-list">
+            {sorted.map((study, i) => (
+                <div class="reveal" style={`transition-delay: ${i * 0.08}s`}>
+                    <CaseStudyCard
+                        title={study.data.title}
+                        subtitle={study.data.subtitle}
+                        company={study.data.company}
+                        role={study.data.role}
+                        timeline={study.data.timeline}
+                        tags={study.data.tags}
+                        outcomes={study.data.outcomes}
+                        slug={study.slug}
+                    />
+                </div>
+            ))}
+        </div>
+    </section>
+</Layout>
+
+<style>
+    .work-page {
+        padding: 2rem 0 4rem;
+    }
+
+    .work-header {
+        margin-bottom: 4rem;
+    }
+
+    .work-header h1 {
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.025em;
+        margin-bottom: 0.5rem;
+    }
+
+    .work-header p {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+
+    .case-studies-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .case-studies-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>

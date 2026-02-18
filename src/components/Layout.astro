@@ -1,10 +1,17 @@
 ---
+import { site, social } from '../config';
+import { ViewTransitions } from 'astro:transitions';
+import NodeNetwork from './NodeNetwork.astro';
+
 export interface Props {
     title: string;
     description?: string;
 }
 
-const { title, description = "Portfolio showcasing AI, gaming, and development projects" } = Astro.props;
+const { title, description = site.description } = Astro.props;
+const currentPath = Astro.url.pathname;
+const currentYear = new Date().getFullYear();
+const siteUrl = Astro.site?.toString() || site.url;
 ---
 
 <!DOCTYPE html>
@@ -14,342 +21,323 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+
+    <!-- OG -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={siteUrl} />
+
     <title>{title}</title>
+    <ViewTransitions />
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
     <style>
         :root {
+            /* ── Colors ── */
             --text: #dceff3;
-            --background: #0d272c;
-            --primary: #afcbcf;
-            --secondary: #3e4268;
+            --text-muted: rgba(220, 239, 243, 0.55);
+            --text-soft: rgba(220, 239, 243, 0.78);
+            --background: #0f1d1fff;
+            --primary: #2dd4be;
             --accent: #7c6ea9;
-            --card-bg: #1a3a41;
-            --card-hover: #2a4a51;
-            --border: #2a4a51;
+            --card-bg: rgba(26, 58, 65, 0.6);
+            --card-hover: rgba(34, 71, 79, 0.7);
+            --border: rgba(175, 203, 207, 0.12);
+            --border-strong: rgba(175, 203, 207, 0.25);
+
+            /* ── Surfaces ── */
+            --surface-glow: rgba(45, 212, 190, 0.06);
+            --surface-accent: rgba(124, 110, 169, 0.06);
+
+            /* ── Status ── */
+            --status-green: #4ade80;
+            --status-green-glow: rgba(74, 222, 128, 0.45);
+
+            /* ── Spacing ── */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 2rem;
+            --space-xl: 4rem;
+            --space-2xl: 6rem;
+
+            /* ── Motion ── */
+            --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+            --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --duration-slow: 400ms;
+            --duration-reveal: 600ms;
+
+            /* ── Radii ── */
+            --radius-sm: 5px;
+            --radius-md: 9px;
+            --radius-lg: 14px;
+
+            /* ── Shadows ── */
+            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
+            --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.35);
+            --shadow-glow: 0 0 20px rgba(45, 212, 190, 0.12);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
-            font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
             line-height: 1.6;
             color: var(--text);
             background: var(--background);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* Subtle grid texture */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(175, 203, 207, 0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(175, 203, 207, 0.025) 1px, transparent 1px);
+            background-size: 64px 64px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── NAV ─── */
         header {
             position: sticky;
             top: 0;
             z-index: 100;
             padding: 1rem 0;
+            background: rgba(13, 39, 44, 0.82);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid var(--border);
         }
-        
+
         .navbar {
-            background: linear-gradient(135deg, rgba(26, 58, 65, 0.98) 0%, rgba(62, 66, 104, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(175, 203, 207, 0.2);
-            border-radius: 50px;
-            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 900px;
+            max-width: 1080px;
             margin: 0 auto;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(175, 203, 207, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
+            padding: 0 24px;
         }
 
-        .navbar::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(135deg, rgba(175, 203, 207, 0.3), rgba(124, 110, 169, 0.2));
-            border-radius: 50px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .navbar:hover::before {
-            opacity: 0.25;
-        }
-        
         .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--primary);
             text-decoration: none;
-            letter-spacing: -0.02em;
-            text-shadow: 0 2px 8px rgba(175, 203, 207, 0.3);
-            transition: all 0.3s ease;
+            font-family: 'IBM Plex Mono', monospace;
+            letter-spacing: 0.02em;
+            transition: color 0.2s ease;
         }
+        .logo:hover { color: var(--text); }
+        .logo span { color: var(--accent); }
 
-        .logo:hover {
-            color: var(--text);
-            text-shadow: 0 4px 16px rgba(175, 203, 207, 0.5);
-            transform: translateY(-1px);
-        }
-        
         .nav-links {
             display: flex;
             list-style: none;
-            gap: 1.5rem;
+            gap: 0.25rem;
             align-items: center;
         }
 
-        .nav-links > li > a {
+        .nav-links a {
             text-decoration: none;
-            color: var(--text);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
-            position: relative;
-            border: 1px solid transparent;
-        }
-        
-        .nav-links > li > a:hover {
-            color: var(--text);
-            background: rgba(175, 203, 207, 0.15);
-            border-color: rgba(175, 203, 207, 0.3);
-            box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .dropdown {
-            position: relative;
-        }
-        
-        .dropdown-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            cursor: pointer;
-            text-decoration: none;
-            color: rgba(220, 239, 243, 0.9);
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: 25px;
-            transition: all 0.3s ease;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 0.875rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-md);
+            transition: color 0.2s ease, background 0.2s ease;
             border: 1px solid transparent;
         }
 
-        .dropdown-toggle:hover {
+        .nav-links a:hover,
+        .nav-links a.active {
             color: var(--text);
-            background: rgba(175, 203, 207, 0.15);
-            border-color: rgba(175, 203, 207, 0.3);
-            box-shadow: 0 4px 12px rgba(175, 203, 207, 0.2);
-            transform: translateY(-2px);
+            background: rgba(175, 203, 207, 0.07);
+            border-color: var(--border);
         }
-        
-        .dropdown-arrow {
-            transition: transform 0.3s ease;
-            font-size: 0.8rem;
-            color: var(--primary);
+        .nav-links a.active { color: var(--primary); }
+
+        .nav-cta {
+            background: var(--primary) !important;
+            color: var(--background) !important;
+            font-weight: 600 !important;
+            border-color: var(--primary) !important;
         }
-        
-        .dropdown:hover .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-        
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(62, 66, 104, 0.95) 100%);
-            backdrop-filter: blur(20px);
-            border: 2px solid rgba(175, 203, 207, 0.2);
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(175, 203, 207, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 0.75rem 0;
-            min-width: 200px;
-            top: calc(100% + 0.75rem);
-            right: 0;
-            z-index: 1000;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-        }
-        
-        .dropdown:hover .dropdown-content {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
+        .nav-cta:hover {
+            background: var(--text) !important;
+            border-color: var(--text) !important;
+            transform: translateY(-1px);
         }
 
-        @keyframes dropdownFade {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .dropdown-content a {
-            display: block;
-            padding: 1rem 1.5rem;
-            color: rgba(220, 239, 243, 0.9);
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-        }
-        
-        .dropdown-content a:hover {
-            background: rgba(175, 203, 207, 0.15);
-            color: var(--text);
-            border-left-color: var(--primary);
-            padding-left: 2rem;
-        }
-        
-        main {
-            min-height: calc(100vh - 140px);
-            padding: 2rem 0;
-        }
-        
-        footer {
-            background: linear-gradient(135deg, var(--card-bg) 0%, rgba(62, 66, 104, 0.8) 100%);
-            border-top: 2px solid rgba(175, 203, 207, 0.2);
-            color: var(--text);
-            text-align: center;
-            padding: 3rem 0;
-            margin-top: 4rem;
-            box-shadow: 
-                0 -8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(175, 203, 207, 0.1);
-            position: relative;
-        }
-
-        footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--primary), transparent);
-        }
-
-         /* Mobile Navigation */
-        .mobile-menu-toggle {
+        /* Mobile */
+        .mobile-toggle {
             display: none;
             background: none;
-            border: none;
+            border: 1px solid var(--border);
             color: var(--text);
-            font-size: 1.2rem;
+            padding: 0.45rem 0.7rem;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            padding: 0.5rem;
+            font-size: 1rem;
         }
-        
-        @media (max-width: 768px) {
-            .navbar {
-                padding: 0.75rem 1rem;
-                border-radius: 25px;
-            }
-            
-            .logo {
-                font-size: 1.1rem;
-            }
-            
+
+        @media (max-width: 640px) {
+            .mobile-toggle { display: block; }
+
             .nav-links {
                 display: none;
                 position: absolute;
                 top: calc(100% + 0.5rem);
-                left: 0;
-                right: 0;
-                background: var(--card-bg);
+                left: 0; right: 0;
+                background: rgba(26, 58, 65, 0.97);
+                backdrop-filter: blur(16px);
                 border: 1px solid var(--border);
-                border-radius: 12px;
-                padding: 1rem;
+                border-radius: var(--radius-lg);
+                padding: 0.75rem;
                 flex-direction: column;
-                gap: 0.5rem;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+                gap: 0.25rem;
+                margin: 0 24px;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             }
-            
-            .nav-links.active {
-                display: flex;
+            .nav-links.open { display: flex; }
+            .nav-links a { width: 100%; text-align: center; }
+        }
+
+        /* ─── MAIN ─── */
+        main {
+            padding: 2rem 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── FOOTER ─── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2.5rem 0;
+            margin-top: 5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-inner p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-family: 'IBM Plex Mono', monospace;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: color 0.2s ease;
+        }
+        .footer-links a:hover { color: var(--primary); }
+
+        @media (max-width: 640px) {
+            .footer-inner { flex-direction: column; text-align: center; }
+        }
+
+        /* ─── SCROLL REVEAL ─── */
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity var(--duration-reveal) var(--ease-out-quad),
+                        transform var(--duration-reveal) var(--ease-out-expo);
+        }
+        .reveal[data-reveal="left"] { transform: translateX(-24px); }
+        .reveal[data-reveal="right"] { transform: translateX(24px); }
+        .reveal[data-reveal="fade"] { transform: none; }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translate(0);
+        }
+
+        /* Reduced motion: skip all reveal animations */
+        @media (prefers-reduced-motion: reduce) {
+            .reveal {
+                opacity: 1;
+                transform: none;
+                transition: none;
             }
-            
-            .nav-links > li > a {
-                width: 100%;
-                text-align: center;
-                padding: 0.75rem 1rem;
-            }
-            
-            .dropdown-content {
-                position: static;
-                display: block;
-                background: rgba(175, 203, 207, 0.05);
-                border: none;
-                box-shadow: none;
-                margin-top: 0.5rem;
-                border-radius: 8px;
-            }
-            
-            .mobile-menu-toggle {
-                display: block;
-            }
-            
-            .dropdown-arrow {
-                display: none;
-            }
+        }
+
+        /* ─── SKIP LINK ─── */
+        .skip-link {
+            position: absolute;
+            top: -100%;
+            left: var(--space-md);
+            padding: var(--space-sm) var(--space-md);
+            background: var(--primary);
+            color: var(--background);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: var(--radius-md);
+            z-index: 200;
+            text-decoration: none;
+            transition: top var(--duration-normal) var(--ease-out-expo);
+        }
+        .skip-link:focus {
+            top: var(--space-md);
+        }
+
+        /* ─── GLOBAL FOCUS ─── */
+        :focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 3px;
         }
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <NodeNetwork />
     <header>
-        <div class="container">
-            <nav class="navbar">
-                <a href="/" class="logo">Francesco Di Mise</a>
-                <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
-                <ul class="nav-links" id="navLinks">
-                    <li><a href="/">Home</a></li>
-                    <li><a href="/blog">Blog</a></li>
-                    <li><a href="/projects/ai">AI</a></li>
-                    <li><a href="/projects/gaming">Gaming</a></li>
-                    <li><a href="/projects/coding-misc">Coding Misc</a></li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle">
-                            More <span class="dropdown-arrow">▼</span>
-                        </a>
-                        <div class="dropdown-content">
-                            <a href="/projects/research">Research</a>
-                            <a href="/projects/web-dev">Web Dev</a>
-                            <a href="/projects/all-projects">All Projects</a>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
-        </div>
+        <nav class="navbar">
+            <a href="/" class="logo">{site.logo}<span>.</span></a>
+            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">&#9776;</button>
+            <ul class="nav-links" id="nav">
+                <li><a href="/" class:list={[{ active: currentPath === '/' }]}>Home</a></li>
+                <li><a href="/work" class:list={[{ active: currentPath.startsWith('/work') }]}>Work</a></li>
+                <li><a href="/#contact" class="nav-cta">Contact</a></li>
+            </ul>
+        </nav>
     </header>
 
-    <main>
+    <main id="main-content">
         <div class="container">
             <slot />
         </div>
@@ -357,71 +345,51 @@ const { title, description = "Portfolio showcasing AI, gaming, and development p
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Francesco Di Mise. All rights reserved.</p>
+            <div class="footer-inner">
+                <p>&copy; {currentYear} {site.name}</p>
+                <div class="footer-links">
+                    <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+                    <a href={social.github} target="_blank" rel="noopener">GitHub</a>
+                    <a href={`mailto:${social.email}`}>Email</a>
+                </div>
+            </div>
         </div>
     </footer>
-    <script is:inline>
-        function toggleMobileMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks?.classList.toggle('active');
-        }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(event) {
-            const navbar = document.querySelector('.navbar');
-            const navLinks = document.getElementById('navLinks');
-            
-            if (navbar && !navbar.contains(event.target as Node)) {
-                navLinks?.classList.remove('active');
-            }
-        });
+    <script>
+        function initReveals() {
+            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-        // Enhanced dropdown functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const dropdown = document.querySelector('.dropdown');
-            const dropdownToggle = document.querySelector('.dropdown-toggle');
-            const dropdownContent = document.querySelector('.dropdown-content') as HTMLElement;
-            let dropdownTimeout: ReturnType<typeof setTimeout> | null = null;
-            let isDropdownOpen = false;
+            document.querySelectorAll('.reveal').forEach((el, i) => {
+                if (prefersReduced) {
+                    el.classList.add('visible');
+                    return;
+                }
 
-            if (dropdown && dropdownContent && dropdownToggle) {
-                // Show dropdown on mouse enter dropdown container
-                dropdown.addEventListener('mouseenter', function() {
-                    if (dropdownTimeout) clearTimeout(dropdownTimeout);
-                    if (!isDropdownOpen) {
-                        dropdownContent.style.display = 'block';
-                        isDropdownOpen = true;
-                        // Trigger animation
-                        setTimeout(() => {
-                            dropdownContent.style.opacity = '1';
-                            dropdownContent.style.transform = 'translateY(0)';
-                        }, 10);
+                // Support data-reveal-delay for explicit timing, or auto-stagger
+                const delay = el.getAttribute('data-reveal-delay');
+                if (delay) {
+                    (el as HTMLElement).style.transitionDelay = `${delay}ms`;
+                }
+            });
+
+            if (prefersReduced) return;
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
                     }
                 });
+            }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-                // Hide dropdown with delay when leaving entire dropdown area
-                dropdown.addEventListener('mouseleave', function() {
-                    dropdownTimeout = setTimeout(() => {
-                        dropdownContent.style.opacity = '0';
-                        dropdownContent.style.transform = 'translateY(-10px)';
-                        setTimeout(() => {
-                            dropdownContent.style.display = 'none';
-                            isDropdownOpen = false;
-                        }, 300);
-                    }, 150);
-                });
+            document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
+        }
 
-                // Cancel close timeout when re-entering dropdown area
-                dropdown.addEventListener('mouseenter', function() {
-                    if (dropdownTimeout) clearTimeout(dropdownTimeout);
-                });
-
-                // Initial styles for smooth transitions
-                dropdownContent.style.opacity = '0';
-                dropdownContent.style.transform = 'translateY(-10px)';
-                dropdownContent.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-            }
-        });
+        // Run on initial load and on View Transition navigations
+        initReveals();
+        document.addEventListener('astro:page-load', initReveals);
     </script>
 </body>
 </html>
