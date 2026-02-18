@@ -1,0 +1,16 @@
+# LLM Index
+
+Site purpose: Portfolio website for Francesco Di Mario focused on AI implementation, product operations, and case-study driven work history.
+
+Canonical root: https://francescodm6.github.io
+
+Key pages:
+- Home: https://francescodm6.github.io/
+- Work index: https://francescodm6.github.io/work
+- Case study: Implementing Salesforce Agentforce for a LATAM Battery Retailer — https://francescodm6.github.io/work/skyblux-agentforce
+- Case study: Business Intelligence Dashboard — https://francescodm6.github.io/work/bi-dashboard
+- Case study: AI Assistant Platform for a Family Distribution Business — https://francescodm6.github.io/work/family-ai-platform
+
+Machine-readable resources:
+- LLM index (this file): https://francescodm6.github.io/llms.txt
+- Case Studies: https://francescodm6.github.io/llms-full.txt
