@@ -13,8 +13,8 @@ import { site } from '../config';
         </p>
 
         <div class="actions">
-            <a href="/" class="btn-primary">Back to home</a>
-            <a href="/work" class="btn-secondary">Browse case studies</a>
+            <a href="/" class="btn btn-primary">Back to home</a>
+            <a href="/work" class="btn btn-secondary">Browse case studies</a>
         </div>
 
         <p class="hint">
@@ -25,7 +25,7 @@ import { site } from '../config';
 
 <style>
     .not-found {
-        min-height: calc(100vh - 210px);
+        min-height: calc(100vh - var(--layout-chrome));
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -71,13 +71,13 @@ import { site } from '../config';
         margin-bottom: 1.5rem;
     }
 
-    .btn-primary,
-    .btn-secondary {
+    .btn {
         display: inline-flex;
         align-items: center;
         text-decoration: none;
         font-size: 0.9rem;
         font-weight: 600;
+        padding: 0.68rem 1.3rem;
         border-radius: var(--radius-md);
         border: 1px solid transparent;
         transition: transform var(--duration-fast) var(--ease-out-quad),
@@ -87,7 +87,6 @@ import { site } from '../config';
     }
 
     .btn-primary {
-        padding: 0.68rem 1.3rem;
         background: var(--primary);
         color: var(--background);
         border-color: var(--primary);
@@ -100,7 +99,6 @@ import { site } from '../config';
     }
 
     .btn-secondary {
-        padding: 0.68rem 1.3rem;
         background: transparent;
         color: var(--text);
         border-color: var(--border-strong);
@@ -118,7 +116,7 @@ import { site } from '../config';
 
     @media (max-width: 640px) {
         .not-found {
-            min-height: calc(100vh - 170px);
+            min-height: calc(100vh - var(--layout-chrome-mobile));
             align-items: stretch;
         }
 
@@ -126,8 +124,7 @@ import { site } from '../config';
             flex-direction: column;
         }
 
-        .btn-primary,
-        .btn-secondary {
+        .btn {
             justify-content: center;
         }
     }
