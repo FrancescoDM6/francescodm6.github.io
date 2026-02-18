@@ -1,0 +1,131 @@
+---
+import Layout from '../components/Layout.astro';
+import { site } from '../config';
+---
+
+<Layout title={`404 — ${site.name}`} description="The page you requested could not be found.">
+    <section class="not-found">
+        <p class="status">404</p>
+        <h1>Page not found.</h1>
+        <p class="lead">
+            Sorry — the page you were looking for doesn’t exist, may have moved,
+            or was never published.
+        </p>
+
+        <div class="actions">
+            <a href="/" class="btn btn-primary">Back to home</a>
+            <a href="/work" class="btn btn-secondary">Browse case studies</a>
+        </div>
+
+        <p class="hint">
+            If you followed a stale link, feel free to reach out and I’ll fix it.
+        </p>
+    </section>
+</Layout>
+
+<style>
+    .not-found {
+        min-height: calc(100vh - var(--layout-chrome));
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        max-width: 620px;
+        padding: clamp(2.5rem, 8vw, 5.5rem) 0;
+    }
+
+    .status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.28rem 0.72rem;
+        margin-bottom: 1rem;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border-strong);
+        background: rgba(175, 203, 207, 0.08);
+        color: var(--text-muted);
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+    }
+
+    h1 {
+        font-size: clamp(2rem, 7vw, 3.5rem);
+        line-height: 1.1;
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+    }
+
+    .lead {
+        font-size: 1.06rem;
+        line-height: 1.75;
+        color: var(--text-soft);
+        max-width: 52ch;
+        margin-bottom: 1.9rem;
+    }
+
+    .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 0.68rem 1.3rem;
+        border-radius: var(--radius-md);
+        border: 1px solid transparent;
+        transition: transform var(--duration-fast) var(--ease-out-quad),
+            background var(--duration-fast) var(--ease-out-quad),
+            color var(--duration-fast) var(--ease-out-quad),
+            border-color var(--duration-fast) var(--ease-out-quad);
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: var(--background);
+        border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-1px);
+        background: var(--text);
+        border-color: var(--text);
+    }
+
+    .btn-secondary {
+        background: transparent;
+        color: var(--text);
+        border-color: var(--border-strong);
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        background: rgba(175, 203, 207, 0.08);
+    }
+
+    .hint {
+        color: var(--text-muted);
+        font-size: 0.92rem;
+    }
+
+    @media (max-width: 640px) {
+        .not-found {
+            min-height: calc(100vh - var(--layout-chrome-mobile));
+            align-items: stretch;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            justify-content: center;
+        }
+    }
+</style>
