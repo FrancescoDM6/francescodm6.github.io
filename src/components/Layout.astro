@@ -41,7 +41,11 @@ const currentUrl = Astro.site
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+    </noscript>
 
     <style>
         :root {
@@ -51,7 +55,7 @@ const currentUrl = Astro.site
             --text-soft: rgba(220, 239, 243, 0.78);
             --background: #0f1d1fff;
             --primary: #2dd4be;
-            --accent: #7c6ea9;
+            --accent: #ac9df2; /* Improved contrast ratio */
             --card-bg: rgba(26, 58, 65, 0.6);
             --card-hover: rgba(34, 71, 79, 0.7);
             --border: rgba(175, 203, 207, 0.12);

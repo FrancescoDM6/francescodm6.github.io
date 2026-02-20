@@ -99,6 +99,8 @@ function extractFirstParagraph(body) {
     .map((paragraph) => paragraph.trim())
     .filter(Boolean)
     .filter((paragraph) => !paragraph.startsWith('#'))
+    .filter((paragraph) => !paragraph.startsWith('import '))
+    .filter((paragraph) => !paragraph.startsWith('<'))
     .map((paragraph) => paragraph.replace(/\*|_/g, ''))
     .map((paragraph) => paragraph.replace(/`/g, ''))
     .map((paragraph) => paragraph.replace(/\[(.*?)\]\(.*?\)/g, '$1'))
@@ -118,7 +120,8 @@ function parseMarkdownEntry(filePath, source) {
   // const [, frontmatterText, body] = match;
   // const data = parseFrontmatter(frontmatterText);
   const { data, content: body } = matter(raw);
-  const slug = path.basename(filePath, '.md');
+  const ext = path.extname(filePath);   // .md or .mdx
+  const slug = path.basename(filePath, ext);
 
   const paragraphFromBody = extractFirstParagraph(body);
   const subtitle = typeof data.subtitle === 'string' ? data.subtitle : '';
@@ -155,7 +158,7 @@ function parseMarkdownEntry(filePath, source) {
 function readEntries(source) {
   const absoluteDir = path.join(repoRoot, source.directory);
   const files = readdirSync(absoluteDir)
-    .filter((file) => file.endsWith('.md'))
+    .filter((file) => file.endsWith('.md') || file.endsWith('.mdx'))
     .sort((a, b) => a.localeCompare(b));
 
   return files

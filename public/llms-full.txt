@@ -4,14 +4,15 @@ Canonical root: https://francescodm6.github.io
 
 ## Implementing Salesforce Agentforce for a LATAM Battery Retailer
 title: Implementing Salesforce Agentforce for a LATAM Battery Retailer
-summary: End-to-end AI agent deployment at a mid-size distributor — from architecture to client alignment, across two languages and two teams. Skyblux Solutions is a consulting firm specializing in Salesforce implementations for Latin American clients. My internship placed me on a project implementing Salesforce Agentforce for a mid-size battery distributor — giving them an AI-driven agent for customer service and sales support workflows.
+summary: End-to-end AI agent deployment at a mid-size distributor — from architecture to client alignment, across two languages and two teams. Skyblux Solutions is a consulting firm specializing in Salesforce implementations for Latin American clients. My internship placed me on a 12-week project implementing Salesforce Agentforce for a mid-size battery distributor — giving them an AI-driven agent for customer service and sales support via WhatsApp.
 role: AI Implementation Intern
 company: Skyblux Solutions
-timeline: Summer 2024
+timeline: Summer 2025
 key outcomes:
-- Delivered a working Agentforce deployment within the internship timeline
+- Delivered production-ready Agentforce implementation on schedule across 12 weeks
+- Built modular component library (50+ instruction blocks, 15+ agent actions, 12+ flows) that enabled rapid iteration under repeated scope changes
 - Maintained alignment across a bilingual engineering/client split throughout the project
-- Designed conversation architecture and automation stack from first principles
+- Created implementation guide and documentation standardizing architecture patterns for future Agentforce deployments
 source URL: https://francescodm6.github.io/work/skyblux-agentforce
 
 ## Business Intelligence Dashboard

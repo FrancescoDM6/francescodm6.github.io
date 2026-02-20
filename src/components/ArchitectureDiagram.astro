@@ -1,0 +1,146 @@
+---
+/**
+ * ArchitectureDiagram — Vertical layered system flow
+ *
+ * Shows the architecture stack as a series of connected layer cards
+ * with flow arrows between them. Pure CSS, no JS required.
+ */
+
+export interface Layer {
+    label: string;
+    details: string[];
+    accent?: boolean;
+}
+
+export interface Props {
+    layers: Layer[];
+}
+
+const { layers } = Astro.props;
+---
+
+<div class="architecture reveal">
+    <h2 class="arch-heading">System architecture</h2>
+    <div class="arch-stack">
+        {layers.map((layer, i) => (
+            <>
+                <div class:list={['arch-layer', { 'arch-layer--accent': layer.accent }]}>
+                    <span class="layer-label">{layer.label}</span>
+                    <div class="layer-details">
+                        {layer.details.map((d) => (
+                            <span class="layer-detail">{d}</span>
+                        ))}
+                    </div>
+                </div>
+                {i < layers.length - 1 && (
+                    <div class="arch-arrow" aria-hidden="true">
+                        <svg width="16" height="20" viewBox="0 0 16 20" fill="none">
+                            <path d="M8 0 L8 14 M3 10 L8 16 L13 10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                )}
+            </>
+        ))}
+    </div>
+</div>
+
+<style>
+    .architecture {
+        margin-bottom: 2.5rem;
+    }
+
+    .arch-heading {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--accent);
+        margin-bottom: 1rem;
+    }
+
+    .arch-stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0;
+    }
+
+    .arch-layer {
+        width: 100%;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 9px;
+        padding: 1rem 1.4rem;
+        display: flex;
+        align-items: baseline;
+        gap: 1rem;
+        transition: border-color var(--duration-normal) ease;
+    }
+
+    .arch-layer:hover {
+        border-color: var(--border-strong);
+    }
+
+    .arch-layer--accent {
+        border-color: rgba(172, 157, 242, 0.5); /* #ac9df2 at 50% opacity */
+        background: rgba(172, 157, 242, 0.12); /* #ac9df2 at 12% opacity */
+        box-shadow: 0 0 20px rgba(172, 157, 242, 0.08); /* Soft purple glow */
+    }
+
+    .arch-layer--accent:hover {
+        border-color: rgba(172, 157, 242, 0.75);
+    }
+
+    .layer-label {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text);
+        white-space: nowrap;
+        min-width: 160px;
+        flex-shrink: 0;
+    }
+
+    .arch-layer--accent .layer-label {
+        color: var(--accent);
+    }
+
+    .layer-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem 0.65rem;
+    }
+
+    .layer-detail {
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        font-family: 'IBM Plex Mono', monospace;
+        padding: 0.15rem 0.5rem;
+        background: rgba(175, 203, 207, 0.05);
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        white-space: nowrap;
+    }
+
+    .arch-arrow {
+        display: flex;
+        justify-content: center;
+        padding: 0.3rem 0;
+        color: var(--border-strong);
+    }
+
+    @media (max-width: 640px) {
+        .arch-layer {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.9rem 1rem;
+        }
+
+        .layer-label {
+            min-width: unset;
+        }
+
+        .layer-detail {
+            font-size: 0.72rem;
+        }
+    }
+</style>

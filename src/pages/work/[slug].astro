@@ -16,6 +16,8 @@ export async function getStaticPaths() {
 const { study } = Astro.props;
 const { Content } = await study.render();
 
+
+
 const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -115,6 +117,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
             </div>
         )}
 
+
         <!-- Main content -->
         <div class="study-content reveal">
             <Content />
@@ -165,7 +168,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
     .dot { color: var(--border-strong); }
 
     .study-header h1 {
-        font-size: clamp(2rem, 4vw, 2.8rem);
+        font-size: clamp(1.6rem, 5vw, 2.8rem);
         font-weight: 700;
         color: var(--text);
         letter-spacing: -0.025em;
@@ -183,7 +186,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
     .study-tags {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.45rem;
+        gap: 0.6rem 0.45rem;
     }
 
     .tag {
@@ -395,5 +398,12 @@ const updatedLabel = formatDate(study.data.updatedAt);
 
     @media (max-width: 640px) {
         .study-stats { grid-template-columns: 1fr; }
+        .study-content :global(ul),
+        .study-content :global(ol) {
+            padding-left: 1.1rem;
+        }
+        .outcomes-block {
+            padding: 1.25rem;
+        }
     }
 </style>

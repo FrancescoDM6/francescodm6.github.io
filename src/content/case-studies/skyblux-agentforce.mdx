@@ -1,0 +1,110 @@
+---
+id: "skyblux-agentforce"
+slug: "skyblux-agentforce"
+title: "Implementing Salesforce Agentforce for a LATAM Battery Retailer"
+subtitle: "End-to-end AI agent deployment at a mid-size distributor — from architecture to client alignment, across two languages and two teams."
+summary: "Led implementation of a production Salesforce Agentforce AI agent for a LATAM battery distributor over 12 weeks — designing 50+ instruction blocks, 15+ agent actions, and 12+ automation flows while coordinating across a bilingual engineering/client split."
+company: "Skyblux Solutions"
+role: "AI Implementation Intern"
+timeline: "Summer 2025"
+status: "published"
+locale: "en-US"
+publishedAt: "2024-09-01"
+updatedAt: "2025-02-19"
+tags: ["Product Operations", "Salesforce", "AI Implementation", "Stakeholder Management", "Process Design"]
+keywords: ["salesforce agentforce", "conversation architecture", "cross-functional alignment", "bilingual delivery", "workflow automation", "whatsapp integration", "scope management"]
+outcomes:
+  - "Delivered production-ready Agentforce implementation on schedule across 12 weeks"
+  - "Built modular component library (50+ instruction blocks, 15+ agent actions, 12+ flows) that enabled rapid iteration under repeated scope changes"
+  - "Maintained alignment across a bilingual engineering/client split throughout the project"
+  - "Created implementation guide and documentation standardizing architecture patterns for future Agentforce deployments"
+order: 1
+---
+
+import ScopeMetrics from '../../components/ScopeMetrics.astro';
+import ArchitectureDiagram from '../../components/ArchitectureDiagram.astro';
+
+<ScopeMetrics metrics={[
+    { value: '50+', label: 'Instruction Blocks', sub: 'Conversation logic' },
+    { value: '15+', label: 'Agent Actions', sub: 'Flows + Apex' },
+    { value: '12+', label: 'Salesforce Flows', sub: 'Validation & routing' },
+    { value: '12', label: 'Weeks', sub: 'May – Aug 2025' },
+]} />
+
+<ArchitectureDiagram layers={[
+    { label: 'Customer', details: ['WhatsApp', 'Spanish language'] },
+    { label: 'Agentforce Agent', details: ['Conversation logic', 'Topic routing', 'Context awareness', 'Escalation rules'], accent: true },
+    { label: 'Agent Actions', details: ['Customer ID', 'Vehicle lookup', 'Battery matching', 'Appointment creation', 'Human handoff'] },
+    { label: 'Salesforce Flows', details: ['Data validation', 'Error handling', 'Decision routing', 'Integration orchestration']},
+    { label: 'Apex & Custom Objects', details: ['Product lookup', 'Data transformation', 'Business logic'] },
+    { label: 'Salesforce Org', details: ['Customer records', 'Vehicle database', 'Battery catalog', 'Work orders', 'Approval workflows'], accent: true },
+]} />
+
+## Background
+
+Skyblux Solutions is a consulting firm specializing in Salesforce implementations for Latin American clients. My internship placed me on a 12-week project implementing Salesforce Agentforce for a mid-size battery distributor — giving them an AI-driven agent for customer service and sales support via WhatsApp.
+
+The project landed on my desk with a clear deliverable and a fuzzy path: build an AI agent that fits real business processes, not just a polished demo. While my title was Development Intern, the project required me to operate at the intersection of engineering, stakeholder management, and project coordination.
+
+## Managing complexity
+
+Three things made this harder than a typical implementation.
+
+### Challenge 1: Scope management
+
+**Problem:** Contract signers were not the working contacts. Client stakeholders repeatedly requested features beyond the original contract scope and modification of already-implemented features, requiring frequent rework of completed components.
+
+**Approach:** I designed modular, reusable components — the product lookup, for example — that could be rearranged when requirements shifted rather than rebuilt from scratch. The PMO maintained scope alignment with the contract while I created demo materials (videos, feature walkthroughs, demonstration guides) to communicate what we'd built and manage expectations. In practice, it was a constant "meet in the middle" negotiation between contract scope and client requests.
+
+**Outcome:** Delivered all contract deliverables on time despite multiple scope change requests. The modular component library turned what would have been expensive rework into reconfiguration.
+
+### Challenge 2: Data quality
+
+**Problem:** The client's Salesforce org contained duplicate, non-uniform, and poorly organized data — particularly problematic for an AI system that requires consistency to give useful answers.
+
+**Approach:** Rather than blocking on a data cleanup that wasn't in scope, I built flexible agent logic to handle partial and missing information. The battery lookup component was designed to work with minimal vehicle data — a customer could say "no sé el año" ("I don't know the year") and the agent would still narrow down recommendations using whatever was available (brand, model, fuel type). I added validation flows and error handling for duplicate records and documented the data quality requirements the client would need to address long-term.
+
+**Outcome:** The agent handles data inconsistency gracefully. Customer experience remains smooth despite underlying data issues, and the client has a clear roadmap for data improvement.
+
+### Challenge 3: Client delays and dependencies
+
+**Problem:** Dependencies on client data delivery and Salesforce org functionality readiness fell behind schedule, creating blockers for integration work.
+
+**Approach:** Weekly governance sessions with the Senior Engineer and PMO tracked client deliverables proactively. When blockers appeared, I ran parallel work streams — developing agent logic and conversation architecture while waiting for data and integration readiness. Clear communication with the PMO about risks allowed us to adjust timelines before they became surprises.
+
+**Outcome:** Delivered on schedule by managing dependencies proactively and adapting the development order rather than waiting.
+
+## Coordination and documentation
+
+The piece I wasn't expecting to own as much: the coordination layer between engineering, PMO, and the client.
+
+**Weekly governance sessions** with the Senior Engineer and PMO to track progress, surface risks, and align on priorities. **Leadership presentations** to Skyblux executives demonstrating milestones and technical capabilities. **Client demo facilitation** — creating demo materials to help the PMO communicate technical value to Spanish-speaking client stakeholders.
+
+The substantive work was translation. Client said "the agent should handle service requests end-to-end" — engineering needed to know exactly what triggers that, how to detect it in the conversation, what data it needs, and what the fallback flow looks like. That translation happened in alignment sessions, and more than once it caught a design decision that would've required significant rework downstream.
+
+I also owned the documentation that outlasted the project: an **implementation guide** documenting architecture decisions, component patterns, and the deployment process, and a **final report** capturing outcomes, learnings, and recommendations for future Agentforce deployments.
+
+## What shipped
+
+The production system handles the full customer service workflow without human intervention for standard cases:
+
+- Customer identification via national ID or license plate
+- Vehicle and battery lookup using flexible matching against partial data
+- Service appointment scheduling with work order creation and field service dispatch
+- Intelligent escalation to human agents when the request exceeds agent scope
+
+The client requested additional features beyond the original scope — which, beyond being a scope management challenge, was proof that the system was delivering enough value to want more of it.
+
+## What I learned
+
+**Systematic thinking is the foundation.** Understanding how components integrate, where risks appear, and how changes ripple through dependencies was the skill that made everything else work. Mapping the full architecture helped me anticipate blockers and communicate clearly with stakeholders who operated at different levels of technical detail.
+
+**Flexibility comes from design, not improvisation.** We couldn't control scope creep, but we could control how our system responded to it. Designing for modularity was the most effective risk mitigation strategy available to us.
+
+**Documentation is coordination.** Demo materials, implementation guides, and governance reports weren't artifacts produced at the end — they were the coordination layer that kept engineering, PMO, and client aligned throughout. Clear artifacts reduce ambiguity and accelerate decision-making.
+
+**The hardest problems live at the seams.** Between stakeholders (contract signers vs. working contacts), between systems (AI agent vs. existing org data), and between timelines (client delays vs. fixed deadlines). That's where the project management work actually happens, and it's what I found most compelling.
+
+---
+
+*This case study describes the project at a general level. Specific client information and proprietary implementation details are omitted.*
