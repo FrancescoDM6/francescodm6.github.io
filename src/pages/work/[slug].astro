@@ -107,7 +107,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
 
         <!-- Key outcomes -->
         {study.data.outcomes && study.data.outcomes.length > 0 && (
-            <div class="outcomes-block reveal">
+            <div class="outcomes-block card-container reveal">
                 <h2 class="outcomes-heading">Key outcomes</h2>
                 <ul class="outcomes-list">
                     {study.data.outcomes.map((outcome) => (
@@ -128,7 +128,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
         <!-- Footer nav -->
         <div class="study-footer">
             <a href="/work" class="footer-link">&larr; Back to all work</a>
-            <a href="/#contact" class="footer-cta">Get in touch &rarr;</a>
+            <a href="/#contact" class="footer-cta btn btn--primary">Get in touch &rarr;</a>
         </div>
     </div>
 </Layout>
@@ -189,16 +189,6 @@ const updatedLabel = formatDate(study.data.updatedAt);
         gap: 0.6rem 0.45rem;
     }
 
-    .tag {
-        font-size: 0.75rem;
-        font-weight: 500;
-        padding: 0.25rem 0.65rem;
-        background: rgba(175, 203, 207, 0.07);
-        color: var(--primary);
-        border: 1px solid rgba(175, 203, 207, 0.12);
-        border-radius: 5px;
-    }
-
     /* Stats */
     .study-stats {
         display: grid;
@@ -235,9 +225,6 @@ const updatedLabel = formatDate(study.data.updatedAt);
 
     /* Outcomes */
     .outcomes-block {
-        background: var(--card-bg);
-        border: 1px solid var(--border);
-        border-radius: 11px;
         padding: 1.6rem;
         margin-bottom: 2.5rem;
     }
@@ -249,29 +236,6 @@ const updatedLabel = formatDate(study.data.updatedAt);
         letter-spacing: 0.08em;
         color: var(--accent);
         margin-bottom: 0.9rem;
-    }
-
-    .outcomes-list {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-    }
-
-    .outcomes-list li {
-        color: var(--text-soft);
-        font-size: 0.92rem;
-        padding-left: 1.4rem;
-        position: relative;
-        line-height: 1.5;
-    }
-
-    .outcomes-list li::before {
-        content: '\2197';
-        position: absolute;
-        left: 0;
-        color: var(--primary);
-        font-size: 0.82rem;
     }
 
     /* Content */
@@ -379,21 +343,8 @@ const updatedLabel = formatDate(study.data.updatedAt);
     .footer-link:hover { color: var(--primary); }
 
     .footer-cta {
-        display: inline-flex;
-        align-items: center;
         padding: 0.6rem 1.15rem;
-        background: var(--primary);
-        color: var(--background);
-        font-weight: 600;
         font-size: 0.84rem;
-        text-decoration: none;
-        border-radius: 8px;
-        transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .footer-cta:hover {
-        background: var(--text);
-        transform: translateY(-1px);
     }
 
     @media (max-width: 640px) {
