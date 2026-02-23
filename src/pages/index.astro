@@ -1,23 +1,23 @@
 ---
-import Layout from '../components/Layout.astro';
-import CaseStudyCard from '../components/CaseStudyCard.astro';
-import { getCollection } from 'astro:content';
-import { site, social } from '../config';
+import Layout from "../components/Layout.astro";
+import CaseStudyCard from "../components/CaseStudyCard.astro";
+import { getCollection } from "astro:content";
+import { site, social } from "../config";
 
-const allCaseStudies = await getCollection('case-studies');
+const allCaseStudies = await getCollection("case-studies");
 const sorted = allCaseStudies
-    .filter((study) => study.data.status === 'published')
+    .filter((study) => study.data.status === "published")
     .sort((a, b) => a.data.order - b.data.order);
 
 const caseStudiesJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
+    "@context": "https://schema.org",
+    "@type": "ItemList",
     itemListElement: sorted.map((study, index) => ({
-        '@type': 'ListItem',
+        "@type": "ListItem",
         position: index + 1,
         item: {
-            '@type': 'CreativeWork',
-            '@id': study.data.id ?? study.slug,
+            "@type": "CreativeWork",
+            "@id": study.data.id ?? study.slug,
             url: `${site.url}/work/${study.slug}`,
             name: study.data.title,
             abstract: study.data.summary ?? study.data.subtitle,
@@ -42,15 +42,17 @@ const caseStudiesJsonLd = {
 
         <div class="hero-bio">
             <p>
-                MS in AI candidate at Northeastern. This past summer I implemented Salesforce Agentforce
-                for a battery retailer in Latin America, designing the agent architecture and
-                automation stack while keeping engineering and client stakeholders synchronized
-                across languages and time zones.
+                MS in AI candidate at Northeastern. This past summer I
+                implemented Salesforce Agentforce for a battery retailer in
+                Latin America, designing the agent architecture and automation
+                stack while keeping engineering and client stakeholders
+                synchronized across languages and time zones.
             </p>
             <p>
                 I'm targeting 2026 roles in <strong>Product Operations</strong> and
-                <strong>Business Intelligence</strong>, where translating between
-                technical details and business reality is the actual job.
+                <strong>Business Intelligence</strong>, where translating
+                between technical details and business reality is the actual
+                job.
             </p>
         </div>
 
@@ -72,27 +74,31 @@ const caseStudiesJsonLd = {
         <div class="section-header">
             <div>
                 <h2>Selected work</h2>
-                <p class="section-sub">Case studies — context, decisions, outcomes.</p>
+                <p class="section-sub">
+                    Case studies — context, decisions, outcomes.
+                </p>
             </div>
             <a href="/work" class="view-all">All work &rarr;</a>
         </div>
 
         <div class="case-studies-grid">
-            {sorted.map((study) => (
-                <CaseStudyCard
-                    title={study.data.title}
-                    subtitle={study.data.subtitle}
-                    summary={study.data.summary}
-                    company={study.data.company}
-                    role={study.data.role}
-                    timeline={study.data.timeline}
-                    tags={study.data.tags}
-                    status={study.data.status}
-                    locale={study.data.locale}
-                    outcomes={study.data.outcomes}
-                    slug={study.slug}
-                />
-            ))}
+            {
+                sorted.map((study) => (
+                    <CaseStudyCard
+                        title={study.data.title}
+                        subtitle={study.data.subtitle}
+                        summary={study.data.summary}
+                        company={study.data.company}
+                        role={study.data.role}
+                        timeline={study.data.timeline}
+                        tags={study.data.tags}
+                        status={study.data.status}
+                        locale={study.data.locale}
+                        outcomes={study.data.outcomes}
+                        slug={study.slug}
+                    />
+                ))
+            }
         </div>
     </section>
 
@@ -101,17 +107,26 @@ const caseStudiesJsonLd = {
         <div class="about-grid">
             <div class="about-block">
                 <span class="about-label">Education</span>
-                <p>MS Artificial Intelligence<br/>Northeastern University &middot; 2027</p>
-                <p class="about-sub">BS Computer Science + BS Interactive Media & Game Design &middot; WPI</p>
+                <p>
+                    MS Artificial Intelligence<br />Northeastern University
+                    &middot; 2027
+                </p>
+                <p class="about-sub">
+                    BS Computer Science + BS Interactive Media & Game Design
+                    &middot; WPI
+                </p>
             </div>
             <div class="about-block">
                 <span class="about-label">Currently</span>
-                <p>Building an AI assistant platform for a family distribution business across WhatsApp and phone channels.</p>
+                <p>
+                    Building an AI assistant platform for a family distribution
+                    business across WhatsApp and phone channels.
+                </p>
             </div>
-            <div class="about-block">
+            <!-- <div class="about-block">
                 <span class="about-label">Outside work</span>
                 <p>Writing <a href="https://www.royalroad.com/fiction/41035/beesekai" target="_blank" rel="noopener" class="inline-link"><em>Beesekai</em></a> — a webnovel on Royal Road with 166+ chapters over five years.</p>
-            </div>
+            </div> -->
         </div>
     </section>
 
@@ -120,26 +135,43 @@ const caseStudiesJsonLd = {
         <div class="contact-inner">
             <h2>Let's talk</h2>
             <p>
-                Looking for a 2026 co-op or internship where I can bring both analytical
-                rigor and cross-functional judgment. Reach out if that sounds useful.
+                Looking for a 2026 co-op or internship where I can bring both
+                analytical rigor and cross-functional judgment. Reach out if
+                that sounds useful.
             </p>
             <div class="contact-links">
-                <a href={`mailto:${social.email}`} class="contact-link primary-link">
+                <a
+                    href={`mailto:${social.email}`}
+                    class="contact-link primary-link"
+                >
                     <span class="contact-icon">&#9993;</span>
                     {social.email}
                 </a>
-                <a href={social.linkedin} target="_blank" rel="noopener" class="contact-link">
+                <a
+                    href={social.linkedin}
+                    target="_blank"
+                    rel="noopener"
+                    class="contact-link"
+                >
                     <span class="contact-icon">in</span>
                     LinkedIn
                 </a>
-                <a href={social.github} target="_blank" rel="noopener" class="contact-link">
+                <a
+                    href={social.github}
+                    target="_blank"
+                    rel="noopener"
+                    class="contact-link"
+                >
                     <span class="contact-icon">gh</span>
                     GitHub
                 </a>
             </div>
         </div>
     </section>
-    <script type="application/ld+json" set:html={JSON.stringify(caseStudiesJsonLd)} />
+    <script
+        type="application/ld+json"
+        set:html={JSON.stringify(caseStudiesJsonLd)}
+    />
 </Layout>
 
 <style>
@@ -154,7 +186,7 @@ const caseStudiesJsonLd = {
         align-items: center;
         gap: 0.6rem;
         margin-bottom: 2rem;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.78rem;
         color: var(--text-muted);
     }
@@ -169,8 +201,13 @@ const caseStudiesJsonLd = {
     }
 
     @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.35; }
+        0%,
+        100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.35;
+        }
     }
 
     .hero-name {
@@ -269,7 +306,7 @@ const caseStudiesJsonLd = {
         padding: 0.28rem 0.7rem;
         border: 1px solid var(--border);
         border-radius: 100px;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
     }
 
     /* ─── WORK SECTION ─── */
@@ -306,7 +343,9 @@ const caseStudiesJsonLd = {
         white-space: nowrap;
         margin-top: 0.25rem;
     }
-    .view-all:hover { color: var(--text); }
+    .view-all:hover {
+        color: var(--text);
+    }
 
     .case-studies-grid {
         display: grid;
@@ -333,7 +372,7 @@ const caseStudiesJsonLd = {
     }
 
     .about-label {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.7rem;
         text-transform: uppercase;
         letter-spacing: 0.1em;
@@ -428,17 +467,29 @@ const caseStudiesJsonLd = {
     }
 
     .contact-icon {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.78rem;
         color: inherit;
     }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 768px) {
-        .hero { padding: 3rem 0 4rem; }
-        .hero-name { font-size: 2.5rem; }
-        .about-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-        .case-studies-grid { grid-template-columns: 1fr; }
-        .section-header { flex-direction: column; gap: 0.75rem; }
+        .hero {
+            padding: 3rem 0 4rem;
+        }
+        .hero-name {
+            font-size: 2.5rem;
+        }
+        .about-grid {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        .case-studies-grid {
+            grid-template-columns: 1fr;
+        }
+        .section-header {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
     }
 </style>

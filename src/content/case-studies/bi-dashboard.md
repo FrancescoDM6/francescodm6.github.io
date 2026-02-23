@@ -7,7 +7,7 @@ summary: "Built a complete BI workflow from data sourcing through analysis deliv
 company: "Personal Project"
 role: "Data Analyst"
 timeline: "2025"
-status: "published"
+status: "draft"
 locale: "en-US"
 publishedAt: "2025-02-10"
 updatedAt: "2025-02-10"
