@@ -1,0 +1,54 @@
+---
+export interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  href?: string;
+}
+
+const { src, alt, caption, href } = Astro.props;
+const imageHref = href ?? src;
+---
+
+<figure class="screenshot-figure">
+  <a href={imageHref} target="_blank" rel="noopener noreferrer" class="shot-link">
+    <img src={src} alt={alt} loading="lazy" decoding="async" />
+  </a>
+
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<style>
+  .screenshot-figure {
+    margin: 1.2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .shot-link {
+    display: block;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: rgba(15, 29, 31, 0.8);
+    transition: border-color var(--duration-normal) ease, transform var(--duration-normal) var(--ease-out-expo);
+  }
+
+  .shot-link:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  figcaption {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+</style>

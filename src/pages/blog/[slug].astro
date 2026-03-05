@@ -1,0 +1,265 @@
+---
+import Layout from "../../components/Layout.astro";
+import EmbedFrame from "../../components/content/EmbedFrame.astro";
+import ScreenshotFigure from "../../components/content/ScreenshotFigure.astro";
+import ScreenshotGallery from "../../components/content/ScreenshotGallery.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../config";
+import { formatDate } from "../../utils/date";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog");
+  return posts
+    .filter((post) => post.data.status === "published")
+    .map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+
+const publishedLabel = formatDate(post.data.publishedAt, post.data.locale);
+const updatedLabel = formatDate(post.data.updatedAt, post.data.locale);
+
+const articleJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": post.data.id ?? post.slug,
+  headline: post.data.title,
+  description: post.data.summary ?? post.data.excerpt ?? post.data.subtitle,
+  datePublished: post.data.publishedAt?.toISOString(),
+  dateModified: post.data.updatedAt?.toISOString(),
+  inLanguage: post.data.locale,
+  keywords: post.data.keywords ?? post.data.tags,
+  url: `${site.url}/blog/${post.slug}`,
+  author: {
+    "@type": "Person",
+    name: site.name,
+  },
+};
+---
+
+<Layout
+  title={`${post.data.title} - ${site.name}`}
+  description={post.data.summary ?? post.data.excerpt ?? post.data.subtitle}
+>
+  <article class="post-page">
+    <div class="back-row">
+      <a href="/blog" class="back-link">&larr; Back to Blog</a>
+    </div>
+
+    <header class="post-header reveal">
+      <div class="meta-row">
+        {publishedLabel && <span>{publishedLabel}</span>}
+        {
+          post.data.readTime && (
+            <>
+              <span class="dot">&middot;</span>
+              <span>{post.data.readTime}</span>
+            </>
+          )
+        }
+        {
+          post.data.category && (
+            <>
+              <span class="dot">&middot;</span>
+              <span class="category">{post.data.category}</span>
+            </>
+          )
+        }
+      </div>
+
+      <h1>{post.data.title}</h1>
+      <p class="subtitle">
+        {post.data.summary ?? post.data.excerpt ?? post.data.subtitle}
+      </p>
+
+      <div class="tags">
+        {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
+      </div>
+    </header>
+
+    {
+      (updatedLabel || post.data.status) && (
+        <div class="status-row reveal">
+          {updatedLabel && (
+            <>
+              <span>Updated: {updatedLabel}</span>
+              <span class="dot">&middot;</span>
+            </>
+          )}
+          <span>Status: {post.data.status}</span>
+        </div>
+      )
+    }
+
+    {
+      post.data.screenshots && post.data.screenshots.length > 0 && (
+        <div class="reveal">
+          <h2 class="section-title">Screenshots</h2>
+          <ScreenshotGallery items={post.data.screenshots} />
+        </div>
+      )
+    }
+
+    <div class="content reveal">
+      <Content
+        components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }}
+      />
+    </div>
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(articleJsonLd)}
+    />
+  </article>
+</Layout>
+
+<style>
+  .post-page {
+    max-width: 740px;
+    margin: 0 auto;
+  }
+
+  .back-row {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.84rem;
+    transition: color var(--duration-normal) ease;
+  }
+
+  .back-link:hover {
+    color: var(--primary);
+  }
+
+  .post-header {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .category {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .dot {
+    color: var(--border-strong);
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.7rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    color: var(--text-soft);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+  }
+
+  .status-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.73rem;
+    color: var(--text-muted);
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: rgba(26, 58, 65, 0.42);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin: 1.4rem 0 0.8rem;
+  }
+
+  .content {
+    margin: 2rem 0 4rem;
+    line-height: 1.8;
+  }
+
+  .content :global(h2) {
+    margin-top: 2.4rem;
+    margin-bottom: 0.9rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .content :global(h3) {
+    margin-top: 1.7rem;
+    margin-bottom: 0.65rem;
+    font-size: 1.05rem;
+  }
+
+  .content :global(p),
+  .content :global(li) {
+    color: var(--text-soft);
+    font-size: 0.97rem;
+  }
+
+  .content :global(ul),
+  .content :global(ol) {
+    margin-bottom: 1.2rem;
+    padding-left: 1.2rem;
+  }
+
+  .content :global(blockquote) {
+    border-left: 3px solid var(--accent);
+    padding: 0.8rem 1rem;
+    background: rgba(124, 110, 169, 0.06);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    margin: 1.5rem 0;
+  }
+
+  .content :global(code) {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.83rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: rgba(62, 66, 104, 0.25);
+    color: var(--accent);
+  }
+</style>

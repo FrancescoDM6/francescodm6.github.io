@@ -5,21 +5,19 @@ import { toSummary } from '../../utils/summary';
 const RESPONSE_VERSION = '1.0';
 
 export const GET: APIRoute = async () => {
-  const caseStudies = await getCollection('case-studies');
+  const posts = await getCollection('blog');
 
-  const records = caseStudies
+  const records = posts
     .filter((entry) => entry.data.status === 'published')
-    .sort((a, b) => a.data.order - b.data.order)
+    .sort((a, b) => (b.data.publishedAt?.getTime() ?? 0) - (a.data.publishedAt?.getTime() ?? 0))
     .map((entry) => ({
-      url: `/work/${entry.slug}/`,
+      url: `/blog/${entry.slug}/`,
       title: entry.data.title,
       summary: toSummary(entry.data.subtitle, entry.body),
       tags: [...entry.data.tags],
-      role: entry.data.role,
-      company: entry.data.company,
-      timeline: entry.data.timeline,
-      outcomes: entry.data.outcomes ?? [],
-      screenshots: entry.data.screenshots ?? [],
+      category: entry.data.category ?? null,
+      readTime: entry.data.readTime ?? null,
+      publishedTimestamp: entry.data.publishedAt?.toISOString() ?? null,
       updatedTimestamp: entry.data.updatedAt?.toISOString() ?? null,
     }));
 

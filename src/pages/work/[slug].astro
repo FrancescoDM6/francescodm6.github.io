@@ -1,12 +1,16 @@
 ---
-import Layout from '../../components/Layout.astro';
-import { getCollection } from 'astro:content';
-import { site } from '../../config';
+import Layout from "../../components/Layout.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../config";
+import EmbedFrame from "../../components/content/EmbedFrame.astro";
+import ScreenshotFigure from "../../components/content/ScreenshotFigure.astro";
+import ScreenshotGallery from "../../components/content/ScreenshotGallery.astro";
+import { formatDate } from "../../utils/date";
 
 export async function getStaticPaths() {
-    const studies = await getCollection('case-studies');
+    const studies = await getCollection("case-studies");
     return studies
-        .filter((study) => study.data.status === 'published')
+        .filter((study) => study.data.status === "published")
         .map((study) => ({
             params: { slug: study.slug },
             props: { study },
@@ -16,12 +20,10 @@ export async function getStaticPaths() {
 const { study } = Astro.props;
 const { Content } = await study.render();
 
-
-
 const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    '@id': study.data.id ?? study.slug,
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": study.data.id ?? study.slug,
     headline: study.data.title,
     description: study.data.summary ?? study.data.subtitle,
     abstract: study.data.summary ?? study.data.subtitle,
@@ -32,19 +34,19 @@ const articleJsonLd = {
     url: `${site.url}/work/${study.slug}`,
     about: study.data.tags,
     author: {
-        '@type': 'Person',
+        "@type": "Person",
         name: site.name,
     },
 };
 
-const formatDate = (date?: Date) =>
-    date ? new Intl.DateTimeFormat(study.data.locale, { dateStyle: 'medium' }).format(date) : null;
-
-const publishedLabel = formatDate(study.data.publishedAt);
-const updatedLabel = formatDate(study.data.updatedAt);
+const publishedLabel = formatDate(study.data.publishedAt, study.data.locale);
+const updatedLabel = formatDate(study.data.updatedAt, study.data.locale);
 ---
 
-<Layout title={`${study.data.title} — ${site.name}`} description={study.data.summary ?? study.data.subtitle}>
+<Layout
+    title={`${study.data.title} — ${site.name}`}
+    description={study.data.summary ?? study.data.subtitle}
+>
     <div class="case-study-page">
         <!-- Back nav -->
         <div class="back-row">
@@ -60,12 +62,12 @@ const updatedLabel = formatDate(study.data.updatedAt);
             </div>
 
             <h1>{study.data.title}</h1>
-            <p class="study-subtitle">{study.data.summary ?? study.data.subtitle}</p>
+            <p class="study-subtitle">
+                {study.data.summary ?? study.data.subtitle}
+            </p>
 
             <div class="study-tags">
-                {study.data.tags.map((tag) => (
-                    <span class="tag">{tag}</span>
-                ))}
+                {study.data.tags.map((tag) => <span class="tag">{tag}</span>)}
             </div>
         </header>
 
@@ -83,18 +85,22 @@ const updatedLabel = formatDate(study.data.updatedAt);
                 <span class="stat-label">Timeline</span>
                 <span class="stat-value">{study.data.timeline}</span>
             </div>
-            {publishedLabel && (
-                <div class="stat-item">
-                    <span class="stat-label">Published</span>
-                    <span class="stat-value">{publishedLabel}</span>
-                </div>
-            )}
-            {updatedLabel && (
-                <div class="stat-item">
-                    <span class="stat-label">Updated</span>
-                    <span class="stat-value">{updatedLabel}</span>
-                </div>
-            )}
+            {
+                publishedLabel && (
+                    <div class="stat-item">
+                        <span class="stat-label">Published</span>
+                        <span class="stat-value">{publishedLabel}</span>
+                    </div>
+                )
+            }
+            {
+                updatedLabel && (
+                    <div class="stat-item">
+                        <span class="stat-label">Updated</span>
+                        <span class="stat-value">{updatedLabel}</span>
+                    </div>
+                )
+            }
             <div class="stat-item">
                 <span class="stat-label">Status</span>
                 <span class="stat-value">{study.data.status}</span>
@@ -106,24 +112,38 @@ const updatedLabel = formatDate(study.data.updatedAt);
         </div>
 
         <!-- Key outcomes -->
-        {study.data.outcomes && study.data.outcomes.length > 0 && (
-            <div class="outcomes-block reveal">
-                <h2 class="outcomes-heading">Key outcomes</h2>
-                <ul class="outcomes-list">
-                    {study.data.outcomes.map((outcome) => (
-                        <li>{outcome}</li>
-                    ))}
-                </ul>
-            </div>
-        )}
+        {
+            study.data.outcomes && study.data.outcomes.length > 0 && (
+                <div class="outcomes-block reveal">
+                    <h2 class="outcomes-heading">Key outcomes</h2>
+                    <ul class="outcomes-list">
+                        {study.data.outcomes.map((outcome) => (
+                            <li>{outcome}</li>
+                        ))}
+                    </ul>
+                </div>
+            )
+        }
 
-
+        {
+            study.data.screenshots && study.data.screenshots.length > 0 && (
+                <div class="reveal">
+                    <h2 class="section-title">Screenshots</h2>
+                    <ScreenshotGallery items={study.data.screenshots} />
+                </div>
+            )
+        }
         <!-- Main content -->
         <div class="study-content reveal">
-            <Content />
+            <Content
+                components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }}
+            />
         </div>
 
-        <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+        <script
+            type="application/ld+json"
+            set:html={JSON.stringify(articleJsonLd)}
+        />
 
         <!-- Footer nav -->
         <div class="study-footer">
@@ -139,7 +159,9 @@ const updatedLabel = formatDate(study.data.updatedAt);
         margin: 0 auto;
     }
 
-    .back-row { padding: 2rem 0 1.5rem; }
+    .back-row {
+        padding: 2rem 0 1.5rem;
+    }
 
     .back-link {
         color: var(--text-muted);
@@ -148,7 +170,9 @@ const updatedLabel = formatDate(study.data.updatedAt);
         font-weight: 500;
         transition: color 0.2s ease;
     }
-    .back-link:hover { color: var(--primary); }
+    .back-link:hover {
+        color: var(--primary);
+    }
 
     /* Header */
     .study-header {
@@ -160,12 +184,14 @@ const updatedLabel = formatDate(study.data.updatedAt);
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.75rem;
         color: var(--text-muted);
         margin-bottom: 1.5rem;
     }
-    .dot { color: var(--border-strong); }
+    .dot {
+        color: var(--border-strong);
+    }
 
     .study-header h1 {
         font-size: clamp(1.6rem, 5vw, 2.8rem);
@@ -220,7 +246,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
     }
 
     .stat-label {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.68rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -242,8 +268,8 @@ const updatedLabel = formatDate(study.data.updatedAt);
         margin-bottom: 2.5rem;
     }
 
-    .outcomes-heading {
-        font-family: 'IBM Plex Mono', monospace;
+    .section-title {
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.72rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
@@ -267,7 +293,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
     }
 
     .outcomes-list li::before {
-        content: '\2197';
+        content: "\2197";
         position: absolute;
         left: 0;
         color: var(--primary);
@@ -343,7 +369,7 @@ const updatedLabel = formatDate(study.data.updatedAt);
     }
 
     .study-content :global(code) {
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         font-size: 0.83rem;
         background: rgba(62, 66, 104, 0.25);
         color: var(--accent);
@@ -376,7 +402,9 @@ const updatedLabel = formatDate(study.data.updatedAt);
         font-weight: 500;
         transition: color 0.2s ease;
     }
-    .footer-link:hover { color: var(--primary); }
+    .footer-link:hover {
+        color: var(--primary);
+    }
 
     .footer-cta {
         display: inline-flex;
@@ -397,7 +425,9 @@ const updatedLabel = formatDate(study.data.updatedAt);
     }
 
     @media (max-width: 640px) {
-        .study-stats { grid-template-columns: 1fr; }
+        .study-stats {
+            grid-template-columns: 1fr;
+        }
         .study-content :global(ul),
         .study-content :global(ol) {
             padding-left: 1.1rem;
