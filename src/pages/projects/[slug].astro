@@ -1,0 +1,294 @@
+---
+import Layout from '../../components/Layout.astro';
+import EmbedFrame from '../../components/content/EmbedFrame.astro';
+import ScreenshotFigure from '../../components/content/ScreenshotFigure.astro';
+import ScreenshotGallery from '../../components/content/ScreenshotGallery.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../config';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  return projects
+    .filter((project) => project.data.status === 'published')
+    .map((project) => ({
+      params: { slug: project.slug },
+      props: { project },
+    }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+const formatDate = (date?: Date) =>
+  date ? new Intl.DateTimeFormat(project.data.locale, { dateStyle: 'medium' }).format(date) : null;
+
+const publishedLabel = formatDate(project.data.publishedAt);
+const updatedLabel = formatDate(project.data.updatedAt);
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  '@id': project.data.id ?? project.slug,
+  headline: project.data.title,
+  description: project.data.summary ?? project.data.subtitle,
+  datePublished: project.data.publishedAt?.toISOString(),
+  dateModified: project.data.updatedAt?.toISOString(),
+  inLanguage: project.data.locale,
+  keywords: project.data.keywords ?? project.data.tags,
+  url: `${site.url}/projects/${project.slug}`,
+  author: {
+    '@type': 'Person',
+    name: site.name,
+  },
+};
+---
+
+<Layout title={`${project.data.title} - ${site.name}`} description={project.data.summary ?? project.data.subtitle}>
+  <article class="project-page">
+    <div class="back-row">
+      <a href="/projects" class="back-link">&larr; Back to Projects</a>
+    </div>
+
+    <header class="project-header reveal">
+      <div class="meta-row">
+        <span>{project.data.projectType}</span>
+        <span class="dot">&middot;</span>
+        <span>{project.data.timeline}</span>
+      </div>
+
+      <h1>{project.data.title}</h1>
+      <p class="subtitle">{project.data.summary ?? project.data.subtitle}</p>
+
+      <div class="tags">
+        {project.data.tags.map((tag) => (
+          <span class="tag">{tag}</span>
+        ))}
+      </div>
+    </header>
+
+    <div class="stats reveal">
+      <div class="stat">
+        <span class="label">Type</span>
+        <span class="value">{project.data.projectType}</span>
+      </div>
+      <div class="stat">
+        <span class="label">Timeline</span>
+        <span class="value">{project.data.timeline}</span>
+      </div>
+      {publishedLabel && (
+        <div class="stat">
+          <span class="label">Published</span>
+          <span class="value">{publishedLabel}</span>
+        </div>
+      )}
+      {updatedLabel && (
+        <div class="stat">
+          <span class="label">Updated</span>
+          <span class="value">{updatedLabel}</span>
+        </div>
+      )}
+      <div class="stat">
+        <span class="label">Status</span>
+        <span class="value">{project.data.status}</span>
+      </div>
+    </div>
+
+    {project.data.links && (
+      <div class="link-row reveal">
+        {project.data.links.demo && <a href={project.data.links.demo} target="_blank" rel="noopener">Live demo</a>}
+        {project.data.links.repository && <a href={project.data.links.repository} target="_blank" rel="noopener">Repository</a>}
+        {project.data.links.documentation && (
+          <a href={project.data.links.documentation} target="_blank" rel="noopener">Documentation</a>
+        )}
+      </div>
+    )}
+
+    {project.data.screenshots && project.data.screenshots.length > 0 && (
+      <div class="reveal">
+        <h2 class="section-title">Screenshots</h2>
+        <ScreenshotGallery items={project.data.screenshots} />
+      </div>
+    )}
+
+    <div class="content reveal">
+      <Content components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }} />
+    </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+  </article>
+</Layout>
+
+<style>
+  .project-page {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .back-row {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .back-link {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.84rem;
+    transition: color var(--duration-normal) ease;
+  }
+
+  .back-link:hover {
+    color: var(--primary);
+  }
+
+  .project-header {
+    border-top: 1px solid var(--border);
+    padding: 2rem 0;
+  }
+
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .dot {
+    color: var(--border-strong);
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 5vw, 2.7rem);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    margin-bottom: 1rem;
+  }
+
+  .subtitle {
+    color: var(--text-soft);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .tag {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--primary);
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .stat {
+    background: var(--card-bg);
+    padding: 1rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .value {
+    font-size: 0.88rem;
+  }
+
+  .link-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .link-row a {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.85rem;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-md);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.83rem;
+    transition: border-color var(--duration-normal) ease, color var(--duration-normal) ease;
+  }
+
+  .link-row a:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+  }
+
+  .section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 0.75rem;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+
+  .content {
+    margin: 2.5rem 0 4rem;
+    line-height: 1.75;
+  }
+
+  .content :global(h2) {
+    margin-top: 2.5rem;
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1px solid var(--border);
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+  }
+
+  .content :global(h3) {
+    margin-top: 1.6rem;
+    margin-bottom: 0.6rem;
+    font-size: 1.05rem;
+  }
+
+  .content :global(p),
+  .content :global(li) {
+    color: var(--text-soft);
+  }
+
+  .content :global(ul),
+  .content :global(ol) {
+    margin-bottom: 1.2rem;
+    padding-left: 1.2rem;
+  }
+
+  .content :global(code) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.83rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: rgba(62, 66, 104, 0.25);
+    color: var(--accent);
+  }
+</style>

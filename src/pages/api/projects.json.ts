@@ -8,32 +8,31 @@ const toSummary = (subtitle: string | undefined, body: string): string => {
     return subtitle.trim();
   }
 
-  const plainText = body
+  return body
     .replace(/```[\s\S]*?```/g, ' ')
     .replace(/`[^`]*`/g, ' ')
     .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
     .replace(/[>#*_~-]/g, ' ')
     .replace(/\s+/g, ' ')
-    .trim();
-
-  return plainText.slice(0, 160);
+    .trim()
+    .slice(0, 160);
 };
 
 export const GET: APIRoute = async () => {
-  const caseStudies = await getCollection('case-studies');
+  const projects = await getCollection('projects');
 
-  const records = caseStudies
+  const records = projects
     .filter((entry) => entry.data.status === 'published')
     .sort((a, b) => a.data.order - b.data.order)
     .map((entry) => ({
-      url: `/work/${entry.slug}/`,
+      url: `/projects/${entry.slug}/`,
       title: entry.data.title,
       summary: toSummary(entry.data.subtitle, entry.body),
       tags: [...entry.data.tags],
-      role: entry.data.role,
-      company: entry.data.company,
+      stack: entry.data.stack ?? [],
+      projectType: entry.data.projectType,
       timeline: entry.data.timeline,
-      outcomes: entry.data.outcomes ?? [],
+      links: entry.data.links ?? {},
       screenshots: entry.data.screenshots ?? [],
       updatedTimestamp: entry.data.updatedAt?.toISOString() ?? null,
     }));

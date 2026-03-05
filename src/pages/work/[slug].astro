@@ -2,6 +2,9 @@
 import Layout from '../../components/Layout.astro';
 import { getCollection } from 'astro:content';
 import { site } from '../../config';
+import EmbedFrame from '../../components/content/EmbedFrame.astro';
+import ScreenshotFigure from '../../components/content/ScreenshotFigure.astro';
+import ScreenshotGallery from '../../components/content/ScreenshotGallery.astro';
 
 export async function getStaticPaths() {
     const studies = await getCollection('case-studies');
@@ -118,9 +121,15 @@ const updatedLabel = formatDate(study.data.updatedAt);
         )}
 
 
+        {study.data.screenshots && study.data.screenshots.length > 0 && (
+            <div class="reveal">
+                <h2 class="outcomes-heading">Screenshots</h2>
+                <ScreenshotGallery items={study.data.screenshots} />
+            </div>
+        )}
         <!-- Main content -->
         <div class="study-content reveal">
-            <Content />
+            <Content components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }} />
         </div>
 
         <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
@@ -407,3 +416,5 @@ const updatedLabel = formatDate(study.data.updatedAt);
         }
     }
 </style>
+
+

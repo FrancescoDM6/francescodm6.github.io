@@ -1,0 +1,95 @@
+---
+import Layout from '../../components/Layout.astro';
+import BlogPostCard from '../../components/BlogPostCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../config';
+
+const posts = await getCollection('blog');
+const sorted = posts
+  .filter((post) => post.data.status === 'published')
+  .sort((a, b) => {
+    const aTs = a.data.publishedAt?.getTime() ?? 0;
+    const bTs = b.data.publishedAt?.getTime() ?? 0;
+    if (aTs !== bTs) return bTs - aTs;
+    return a.data.order - b.data.order;
+  });
+
+const formatDate = (value?: Date, locale = 'en-US') =>
+  value ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(value) : undefined;
+
+const listJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Blog',
+  name: `${site.name} Blog`,
+  url: `${site.url}/blog`,
+  blogPost: sorted.map((post) => ({
+    '@type': 'BlogPosting',
+    '@id': post.data.id ?? post.slug,
+    headline: post.data.title,
+    datePublished: post.data.publishedAt?.toISOString(),
+    dateModified: post.data.updatedAt?.toISOString(),
+    inLanguage: post.data.locale,
+    keywords: post.data.keywords ?? post.data.tags,
+    url: `${site.url}/blog/${post.slug}`,
+    description: post.data.summary ?? post.data.subtitle,
+  })),
+};
+---
+
+<Layout title={`Blog - ${site.name}`} description="Writing about product operations, AI implementation, and system design.">
+  <section class="page">
+    <header class="page-header">
+      <h1>Blog</h1>
+      <p>Notes on delivery, architecture, and what broke along the way.</p>
+    </header>
+
+    <div class="post-grid">
+      {sorted.map((post) => (
+        <BlogPostCard
+          title={post.data.title}
+          subtitle={post.data.subtitle}
+          summary={post.data.summary ?? post.data.excerpt}
+          category={post.data.category}
+          readTime={post.data.readTime}
+          publishedLabel={formatDate(post.data.publishedAt, post.data.locale)}
+          tags={post.data.tags}
+          slug={post.slug}
+        />
+      ))}
+    </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify(listJsonLd)} />
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 2rem 0 4rem;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-muted);
+  }
+
+  .post-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    .post-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

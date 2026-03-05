@@ -1,0 +1,37 @@
+---
+import ScreenshotFigure from './ScreenshotFigure.astro';
+
+export interface ScreenshotItem {
+  src: string;
+  alt: string;
+  caption?: string;
+  href?: string;
+}
+
+export interface Props {
+  items: ScreenshotItem[];
+}
+
+const { items = [] } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="screenshot-gallery">
+    {items.map((item) => (
+      <ScreenshotFigure {...item} />
+    ))}
+  </section>
+)}
+
+<style>
+  .screenshot-gallery {
+    margin: 2rem 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
+
+  .screenshot-gallery :global(.screenshot-figure) {
+    margin: 0;
+  }
+</style>

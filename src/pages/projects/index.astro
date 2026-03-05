@@ -1,0 +1,96 @@
+---
+import Layout from '../../components/Layout.astro';
+import ProjectCard from '../../components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { site } from '../../config';
+
+const allProjects = await getCollection('projects');
+const sorted = allProjects
+  .filter((project) => project.data.status === 'published')
+  .sort((a, b) => {
+    const orderDelta = a.data.order - b.data.order;
+    if (orderDelta !== 0) return orderDelta;
+
+    const aTs = a.data.publishedAt?.getTime() ?? 0;
+    const bTs = b.data.publishedAt?.getTime() ?? 0;
+    return bTs - aTs;
+  });
+
+const listJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListElement: sorted.map((project, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    item: {
+      '@type': 'SoftwareApplication',
+      '@id': project.data.id ?? project.slug,
+      url: `${site.url}/projects/${project.slug}`,
+      name: project.data.title,
+      abstract: project.data.summary ?? project.data.subtitle,
+      inLanguage: project.data.locale,
+      datePublished: project.data.publishedAt?.toISOString(),
+      dateModified: project.data.updatedAt?.toISOString(),
+      keywords: project.data.keywords ?? project.data.tags,
+    },
+  })),
+};
+---
+
+<Layout title={`Projects - ${site.name}`} description="Projects: shipped builds, architecture choices, and implementation notes.">
+  <section class="page">
+    <header class="page-header">
+      <h1>Projects</h1>
+      <p>Build logs, technical decisions, and production notes.</p>
+    </header>
+
+    <div class="project-grid">
+      {sorted.map((project) => (
+        <ProjectCard
+          title={project.data.title}
+          subtitle={project.data.subtitle}
+          summary={project.data.summary}
+          timeline={project.data.timeline}
+          tags={project.data.tags}
+          stack={project.data.stack}
+          projectType={project.data.projectType}
+          slug={project.slug}
+        />
+      ))}
+    </div>
+
+    <script type="application/ld+json" set:html={JSON.stringify(listJsonLd)} />
+  </section>
+</Layout>
+
+<style>
+  .page {
+    padding: 2rem 0 4rem;
+  }
+
+  .page-header {
+    margin-bottom: 3rem;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    color: var(--text-muted);
+  }
+
+  .project-grid {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  }
+
+  @media (max-width: 768px) {
+    .project-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
