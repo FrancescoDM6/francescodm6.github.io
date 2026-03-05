@@ -29,7 +29,7 @@ const CONTENT_SOURCES = [
     emptyOutcomesFallback:
       'Implementation notes are provided in the project writeup.',
     itemLabel: 'Project',
-    fieldMap: { role: 'category', company: 'projectType', timeline: 'timeline' },
+    fieldMap: { role: 'projectType', company: 'projectType', timeline: 'timeline' },
   },
   {
     id: 'blog',
@@ -106,10 +106,12 @@ function parseMarkdownEntry(filePath, source) {
   const company = (companyField && data[companyField]) || 'Not specified';
   const timeline = (timelineField && data[timelineField]) || 'Not specified';
 
+  const status = typeof data.status === 'string' ? data.status : 'published';
   const sourcePath = `${source.routePrefix}${slug}`;
 
   return {
     id: source.id,
+    status,
     title: data.title || slug,
     summary: collapseWhitespace(summary),
     role,
@@ -136,6 +138,7 @@ function readEntries(source) {
 
   return files
     .map((file) => parseMarkdownEntry(path.join(absoluteDir, file), source))
+    .filter((entry) => entry.status === 'published')
     .sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug));
 }
 
@@ -209,3 +212,4 @@ function main() {
 }
 
 main();
+

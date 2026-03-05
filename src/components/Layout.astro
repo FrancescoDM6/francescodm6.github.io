@@ -420,6 +420,20 @@ const currentUrl = Astro.site
                                 { active: currentPath.startsWith("/work") },
                             ]}>Work</a>
                     </li>
+                    <li>
+                        <a
+                            href="/projects"
+                            class:list={[
+                                { active: currentPath.startsWith("/projects") },
+                            ]}>Projects</a>
+                    </li>
+                    <li>
+                        <a
+                            href="/blog"
+                            class:list={[
+                                { active: currentPath.startsWith("/blog") },
+                            ]}>Blog</a>
+                    </li>
                     <li><a href="/#contact" class="nav-cta">Contact</a></li>
                 </ul>
             </nav>
@@ -535,3 +549,4 @@ const currentUrl = Astro.site
         </script>
     </body>
 </html>
+

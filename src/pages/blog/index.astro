@@ -44,22 +44,26 @@ const listJsonLd = {
       <p>Notes on delivery, architecture, and what broke along the way.</p>
     </header>
 
-    <div class="post-grid">
-      {
-        sorted.map((post) => (
-          <BlogPostCard
-            title={post.data.title}
-            subtitle={post.data.subtitle}
-            summary={post.data.summary ?? post.data.excerpt}
-            category={post.data.category}
-            readTime={post.data.readTime}
-            publishedLabel={formatDate(post.data.publishedAt, post.data.locale)}
-            tags={post.data.tags}
-            slug={post.slug}
-          />
-        ))
-      }
-    </div>
+    {sorted.length === 0 ? (
+      <p class="empty-state">No published blog posts yet.</p>
+    ) : (
+      <div class="post-grid">
+        {
+          sorted.map((post) => (
+            <BlogPostCard
+              title={post.data.title}
+              subtitle={post.data.subtitle}
+              summary={post.data.summary ?? post.data.excerpt}
+              category={post.data.category}
+              readTime={post.data.readTime}
+              publishedLabel={formatDate(post.data.publishedAt, post.data.locale)}
+              tags={post.data.tags}
+              slug={post.slug}
+            />
+          ))
+        }
+      </div>
+    )}
 
     <script type="application/ld+json" set:html={JSON.stringify(listJsonLd)} />
   </section>
@@ -84,6 +88,13 @@ const listJsonLd = {
     color: var(--text-muted);
   }
 
+  .empty-state {
+    color: var(--text-muted);
+    border: 1px dashed var(--border-strong);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.2rem;
+  }
+
   .post-grid {
     display: grid;
     gap: 1.5rem;
@@ -96,3 +107,4 @@ const listJsonLd = {
     }
   }
 </style>
+
