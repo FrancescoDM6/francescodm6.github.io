@@ -1,15 +1,16 @@
 ---
-import Layout from '../../components/Layout.astro';
-import EmbedFrame from '../../components/content/EmbedFrame.astro';
-import ScreenshotFigure from '../../components/content/ScreenshotFigure.astro';
-import ScreenshotGallery from '../../components/content/ScreenshotGallery.astro';
-import { getCollection } from 'astro:content';
-import { site } from '../../config';
+import Layout from "../../components/Layout.astro";
+import EmbedFrame from "../../components/content/EmbedFrame.astro";
+import ScreenshotFigure from "../../components/content/ScreenshotFigure.astro";
+import ScreenshotGallery from "../../components/content/ScreenshotGallery.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../config";
+import { formatDate } from "../../utils/date";
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = await getCollection("blog");
   return posts
-    .filter((post) => post.data.status === 'published')
+    .filter((post) => post.data.status === "published")
     .map((post) => ({
       params: { slug: post.slug },
       props: { post },
@@ -19,16 +20,13 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-const formatDate = (date?: Date) =>
-  date ? new Intl.DateTimeFormat(post.data.locale, { dateStyle: 'medium' }).format(date) : null;
-
-const publishedLabel = formatDate(post.data.publishedAt);
-const updatedLabel = formatDate(post.data.updatedAt);
+const publishedLabel = formatDate(post.data.publishedAt, post.data.locale);
+const updatedLabel = formatDate(post.data.updatedAt, post.data.locale);
 
 const articleJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'BlogPosting',
-  '@id': post.data.id ?? post.slug,
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "@id": post.data.id ?? post.slug,
   headline: post.data.title,
   description: post.data.summary ?? post.data.excerpt ?? post.data.subtitle,
   datePublished: post.data.publishedAt?.toISOString(),
@@ -37,13 +35,16 @@ const articleJsonLd = {
   keywords: post.data.keywords ?? post.data.tags,
   url: `${site.url}/blog/${post.slug}`,
   author: {
-    '@type': 'Person',
+    "@type": "Person",
     name: site.name,
   },
 };
 ---
 
-<Layout title={`${post.data.title} - ${site.name}`} description={post.data.summary ?? post.data.excerpt ?? post.data.subtitle}>
+<Layout
+  title={`${post.data.title} - ${site.name}`}
+  description={post.data.summary ?? post.data.excerpt ?? post.data.subtitle}
+>
   <article class="post-page">
     <div class="back-row">
       <a href="/blog" class="back-link">&larr; Back to Blog</a>
@@ -52,50 +53,67 @@ const articleJsonLd = {
     <header class="post-header reveal">
       <div class="meta-row">
         {publishedLabel && <span>{publishedLabel}</span>}
-        {post.data.readTime && (
-          <>
-            <span class="dot">&middot;</span>
-            <span>{post.data.readTime}</span>
-          </>
-        )}
-        {post.data.category && (
-          <>
-            <span class="dot">&middot;</span>
-            <span class="category">{post.data.category}</span>
-          </>
-        )}
+        {
+          post.data.readTime && (
+            <>
+              <span class="dot">&middot;</span>
+              <span>{post.data.readTime}</span>
+            </>
+          )
+        }
+        {
+          post.data.category && (
+            <>
+              <span class="dot">&middot;</span>
+              <span class="category">{post.data.category}</span>
+            </>
+          )
+        }
       </div>
 
       <h1>{post.data.title}</h1>
-      <p class="subtitle">{post.data.summary ?? post.data.excerpt ?? post.data.subtitle}</p>
+      <p class="subtitle">
+        {post.data.summary ?? post.data.excerpt ?? post.data.subtitle}
+      </p>
 
       <div class="tags">
-        {post.data.tags.map((tag) => (
-          <span class="tag">{tag}</span>
-        ))}
+        {post.data.tags.map((tag) => <span class="tag">{tag}</span>)}
       </div>
     </header>
 
-    {(updatedLabel || post.data.status) && (
-      <div class="status-row reveal">
-        {updatedLabel && <span>Updated: {updatedLabel}</span>}
-        <span class="dot">&middot;</span>
-        <span>Status: {post.data.status}</span>
-      </div>
-    )}
+    {
+      (updatedLabel || post.data.status) && (
+        <div class="status-row reveal">
+          {updatedLabel && (
+            <>
+              <span>Updated: {updatedLabel}</span>
+              <span class="dot">&middot;</span>
+            </>
+          )}
+          <span>Status: {post.data.status}</span>
+        </div>
+      )
+    }
 
-    {post.data.screenshots && post.data.screenshots.length > 0 && (
-      <div class="reveal">
-        <h2 class="section-title">Screenshots</h2>
-        <ScreenshotGallery items={post.data.screenshots} />
-      </div>
-    )}
+    {
+      post.data.screenshots && post.data.screenshots.length > 0 && (
+        <div class="reveal">
+          <h2 class="section-title">Screenshots</h2>
+          <ScreenshotGallery items={post.data.screenshots} />
+        </div>
+      )
+    }
 
     <div class="content reveal">
-      <Content components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }} />
+      <Content
+        components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }}
+      />
     </div>
 
-    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(articleJsonLd)}
+    />
   </article>
 </Layout>
 
@@ -129,7 +147,7 @@ const articleJsonLd = {
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.72rem;
     color: var(--text-muted);
     margin-bottom: 1rem;
@@ -176,7 +194,7 @@ const articleJsonLd = {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.73rem;
     color: var(--text-muted);
     padding: 0.5rem 0.75rem;
@@ -187,7 +205,7 @@ const articleJsonLd = {
   }
 
   .section-title {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 0.75rem;
@@ -236,7 +254,7 @@ const articleJsonLd = {
   }
 
   .content :global(code) {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.83rem;
     padding: 0.15rem 0.45rem;
     border-radius: 4px;
@@ -245,4 +263,3 @@ const articleJsonLd = {
     color: var(--accent);
   }
 </style>
-

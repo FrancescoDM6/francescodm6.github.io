@@ -1,7 +1,7 @@
 ---
-import { site, social } from '../config';
-import { ViewTransitions } from 'astro:transitions';
-import NodeNetwork from './NodeNetwork.astro';
+import { site, social } from "../config";
+import { ViewTransitions } from "astro:transitions";
+import NodeNetwork from "./NodeNetwork.astro";
 
 export interface Props {
     title: string;
@@ -16,416 +16,522 @@ const currentUrl = Astro.site
     : Astro.url.toString();
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content={description} />
-    <link rel="canonical" href={currentUrl} />
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content={description} />
+        <link rel="canonical" href={currentUrl} />
 
-    <!-- OG -->
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={currentUrl} />
+        <!-- OG -->
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={currentUrl} />
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
 
-    <title>{title}</title>
-    <ViewTransitions />
+        <title>{title}</title>
+        <ViewTransitions />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
-    <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
-    </noscript>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            rel="preload"
+            as="style"
+            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+        />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+            media="print"
+            onload="this.media='all'"
+        />
+        <noscript>
+            <link
+                rel="stylesheet"
+                href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap"
+            />
+        </noscript>
 
-    <style>
-        :root {
-            /* ── Colors ── */
-            --text: #dceff3;
-            --text-muted: rgba(220, 239, 243, 0.55);
-            --text-soft: rgba(220, 239, 243, 0.78);
-            --background: #0f1d1fff;
-            --primary: #2dd4be;
-            --accent: #ac9df2; /* Improved contrast ratio */
-            --card-bg: rgba(26, 58, 65, 0.6);
-            --card-hover: rgba(34, 71, 79, 0.7);
-            --border: rgba(175, 203, 207, 0.12);
-            --border-strong: rgba(175, 203, 207, 0.25);
+        <style>
+            :root {
+                /* ── Colors ── */
+                --text: #dceff3;
+                --text-muted: rgba(220, 239, 243, 0.55);
+                --text-soft: rgba(220, 239, 243, 0.78);
+                --background: #0f1d1fff;
+                --primary: #2dd4be;
+                --accent: #ac9df2; /* Improved contrast ratio */
+                --card-bg: rgba(26, 58, 65, 0.6);
+                --card-hover: rgba(34, 71, 79, 0.7);
+                --border: rgba(175, 203, 207, 0.12);
+                --border-strong: rgba(175, 203, 207, 0.25);
 
-            /* ── Surfaces ── */
-            --surface-glow: rgba(45, 212, 190, 0.06);
-            --surface-accent: rgba(124, 110, 169, 0.06);
+                /* ── Surfaces ── */
+                --surface-glow: rgba(45, 212, 190, 0.06);
+                --surface-accent: rgba(124, 110, 169, 0.06);
 
-            /* ── Status ── */
-            --status-green: #4ade80;
-            --status-green-glow: rgba(74, 222, 128, 0.45);
+                /* ── Status ── */
+                --status-green: #4ade80;
+                --status-green-glow: rgba(74, 222, 128, 0.45);
 
-            /* ── Spacing ── */
-            --space-xs: 0.25rem;
-            --space-sm: 0.5rem;
-            --space-md: 1rem;
-            --space-lg: 2rem;
-            --space-xl: 4rem;
-            --space-2xl: 6rem;
+                /* ── Spacing ── */
+                --space-xs: 0.25rem;
+                --space-sm: 0.5rem;
+                --space-md: 1rem;
+                --space-lg: 2rem;
+                --space-xl: 4rem;
+                --space-2xl: 6rem;
 
-            /* ── Motion ── */
-            --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
-            --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-            --duration-fast: 150ms;
-            --duration-normal: 250ms;
-            --duration-slow: 400ms;
-            --duration-reveal: 600ms;
+                /* ── Motion ── */
+                --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+                --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+                --duration-fast: 150ms;
+                --duration-normal: 250ms;
+                --duration-slow: 400ms;
+                --duration-reveal: 600ms;
 
-            /* ── Radii ── */
-            --radius-sm: 5px;
-            --radius-md: 9px;
-            --radius-lg: 14px;
+                /* ── Radii ── */
+                --radius-sm: 5px;
+                --radius-md: 9px;
+                --radius-lg: 14px;
 
-            /* ── Shadows ── */
-            --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
-            --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.35);
-            --shadow-glow: 0 0 20px rgba(45, 212, 190, 0.12);
+                /* ── Shadows ── */
+                --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.2);
+                --shadow-card-hover: 0 20px 50px rgba(0, 0, 0, 0.35);
+                --shadow-glow: 0 0 20px rgba(45, 212, 190, 0.12);
 
-            /* ── Layout ── */
-            --layout-chrome: 210px;          /* header + footer combined height */
-            --layout-chrome-mobile: 170px;
-        }
+                /* ── Layout ── */
+                --layout-chrome: 210px; /* header + footer combined height */
+                --layout-chrome-mobile: 170px;
+            }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        html { scroll-behavior: smooth; }
+            html {
+                scroll-behavior: smooth;
+            }
 
-        body {
-            font-family: 'IBM Plex Sans', -apple-system, sans-serif;
-            line-height: 1.6;
-            color: var(--text);
-            background: var(--background);
-            min-height: 100vh;
-            -webkit-font-smoothing: antialiased;
-        }
+            body {
+                font-family:
+                    "IBM Plex Sans",
+                    -apple-system,
+                    sans-serif;
+                line-height: 1.6;
+                color: var(--text);
+                background: var(--background);
+                min-height: 100vh;
+                -webkit-font-smoothing: antialiased;
+            }
 
-        /* Subtle grid texture */
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(175, 203, 207, 0.025) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(175, 203, 207, 0.025) 1px, transparent 1px);
-            background-size: 64px 64px;
-            pointer-events: none;
-            z-index: 0;
-        }
+            /* Subtle grid texture */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                background-image:
+                    linear-gradient(
+                        rgba(175, 203, 207, 0.025) 1px,
+                        transparent 1px
+                    ),
+                    linear-gradient(
+                        90deg,
+                        rgba(175, 203, 207, 0.025) 1px,
+                        transparent 1px
+                    );
+                background-size: 64px 64px;
+                pointer-events: none;
+                z-index: 0;
+            }
 
-        .container {
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 0 24px;
-            position: relative;
-            z-index: 1;
-        }
+            .container {
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 0 24px;
+                position: relative;
+                z-index: 1;
+            }
 
-        /* ─── NAV ─── */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            padding: 1rem 0;
-            background: rgba(13, 39, 44, 0.82);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border-bottom: 1px solid var(--border);
-        }
+            /* ─── NAV ─── */
+            header {
+                position: sticky;
+                top: 0;
+                z-index: 100;
+                padding: 1rem 0;
+                background: rgba(13, 39, 44, 0.82);
+                backdrop-filter: blur(14px);
+                -webkit-backdrop-filter: blur(14px);
+                border-bottom: 1px solid var(--border);
+            }
 
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1080px;
-            margin: 0 auto;
-            padding: 0 24px;
-        }
+            .navbar {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1080px;
+                margin: 0 auto;
+                padding: 0 24px;
+            }
 
-        .logo {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--primary);
-            text-decoration: none;
-            font-family: 'IBM Plex Mono', monospace;
-            letter-spacing: 0.02em;
-            transition: color 0.2s ease;
-        }
-        .logo:hover { color: var(--text); }
-        .logo span { color: var(--accent); }
-
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 0.25rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            font-size: 0.875rem;
-            padding: 0.45rem 0.9rem;
-            border-radius: var(--radius-md);
-            transition: color 0.2s ease, background 0.2s ease;
-            border: 1px solid transparent;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--text);
-            background: rgba(175, 203, 207, 0.07);
-            border-color: var(--border);
-        }
-        .nav-links a.active { color: var(--primary); }
-
-        .nav-cta {
-            background: var(--primary) !important;
-            color: var(--background) !important;
-            font-weight: 600 !important;
-            border-color: var(--primary) !important;
-        }
-        .nav-cta:hover {
-            background: var(--text) !important;
-            border-color: var(--text) !important;
-            transform: translateY(-1px);
-        }
-
-        /* Mobile */
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.45rem 0.7rem;
-            border-radius: var(--radius-md);
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        @media (max-width: 640px) {
-            .mobile-toggle { display: block; }
+            .logo {
+                font-size: 1rem;
+                font-weight: 600;
+                color: var(--primary);
+                text-decoration: none;
+                font-family: "IBM Plex Mono", monospace;
+                letter-spacing: 0.02em;
+                transition: color 0.2s ease;
+            }
+            .logo:hover {
+                color: var(--text);
+            }
+            .logo span {
+                color: var(--accent);
+            }
 
             .nav-links {
-                display: none;
-                position: absolute;
-                top: calc(100% + 0.5rem);
-                left: 0; right: 0;
-                background: rgba(26, 58, 65, 0.97);
-                backdrop-filter: blur(16px);
-                border: 1px solid var(--border);
-                border-radius: var(--radius-lg);
-                padding: 0.75rem;
-                flex-direction: column;
+                display: flex;
+                list-style: none;
                 gap: 0.25rem;
-                margin: 0 24px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                align-items: center;
             }
-            .nav-links.open { display: flex; }
-            .nav-links a { width: 100%; text-align: center; }
-        }
 
-        /* ─── MAIN ─── */
-        main {
-            padding: 2rem 0;
-            position: relative;
-            z-index: 1;
-        }
+            .nav-links a {
+                text-decoration: none;
+                color: var(--text-muted);
+                font-weight: 500;
+                font-size: 0.875rem;
+                padding: 0.45rem 0.9rem;
+                border-radius: var(--radius-md);
+                transition:
+                    color 0.2s ease,
+                    background 0.2s ease;
+                border: 1px solid transparent;
+            }
 
-        /* ─── FOOTER ─── */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 2.5rem 0;
-            margin-top: 5rem;
-            position: relative;
-            z-index: 1;
-        }
+            .nav-links a:hover,
+            .nav-links a.active {
+                color: var(--text);
+                background: rgba(175, 203, 207, 0.07);
+                border-color: var(--border);
+            }
+            .nav-links a.active {
+                color: var(--primary);
+            }
 
-        .footer-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
+            .nav-cta {
+                background: var(--primary) !important;
+                color: var(--background) !important;
+                font-weight: 600 !important;
+                border-color: var(--primary) !important;
+            }
+            .nav-cta:hover {
+                background: var(--text) !important;
+                border-color: var(--text) !important;
+                transform: translateY(-1px);
+            }
 
-        .footer-inner p {
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            font-family: 'IBM Plex Mono', monospace;
-        }
+            /* Mobile */
+            .mobile-toggle {
+                display: none;
+                background: none;
+                border: 1px solid var(--border);
+                color: var(--text);
+                padding: 0.45rem 0.7rem;
+                border-radius: var(--radius-md);
+                cursor: pointer;
+                font-size: 1rem;
+            }
 
-        .footer-links {
-            display: flex;
-            gap: 1.5rem;
-        }
+            @media (max-width: 640px) {
+                .mobile-toggle {
+                    display: block;
+                }
 
-        .footer-links a {
-            color: var(--text-muted);
-            text-decoration: none;
-            font-size: 0.8rem;
-            transition: color 0.2s ease;
-        }
-        .footer-links a:hover { color: var(--primary); }
+                .nav-links {
+                    display: none;
+                    position: absolute;
+                    top: calc(100% + 0.5rem);
+                    left: 0;
+                    right: 0;
+                    background: rgba(26, 58, 65, 0.97);
+                    backdrop-filter: blur(16px);
+                    border: 1px solid var(--border);
+                    border-radius: var(--radius-lg);
+                    padding: 0.75rem;
+                    flex-direction: column;
+                    gap: 0.25rem;
+                    margin: 0 24px;
+                    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+                }
+                .nav-links.open {
+                    display: flex;
+                }
+                .nav-links a {
+                    width: 100%;
+                    text-align: center;
+                }
+            }
 
-        @media (max-width: 640px) {
-            .footer-inner { flex-direction: column; text-align: center; }
-        }
+            /* ─── MAIN ─── */
+            main {
+                padding: 2rem 0;
+                position: relative;
+                z-index: 1;
+            }
 
-        /* ─── SCROLL REVEAL ─── */
-        .reveal {
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity var(--duration-reveal) var(--ease-out-quad),
-                        transform var(--duration-reveal) var(--ease-out-expo);
-        }
-        .reveal[data-reveal="left"] { transform: translateX(-24px); }
-        .reveal[data-reveal="right"] { transform: translateX(24px); }
-        .reveal[data-reveal="fade"] { transform: none; }
+            /* ─── FOOTER ─── */
+            footer {
+                border-top: 1px solid var(--border);
+                padding: 2.5rem 0;
+                margin-top: 5rem;
+                position: relative;
+                z-index: 1;
+            }
 
-        .reveal.visible {
-            opacity: 1;
-            transform: translate(0);
-        }
+            .footer-inner {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
 
-        /* Reduced motion: skip all reveal animations */
-        @media (prefers-reduced-motion: reduce) {
+            .footer-inner p {
+                color: var(--text-muted);
+                font-size: 0.8rem;
+                font-family: "IBM Plex Mono", monospace;
+            }
+
+            .footer-links {
+                display: flex;
+                gap: 1.5rem;
+            }
+
+            .footer-links a {
+                color: var(--text-muted);
+                text-decoration: none;
+                font-size: 0.8rem;
+                transition: color 0.2s ease;
+            }
+            .footer-links a:hover {
+                color: var(--primary);
+            }
+
+            @media (max-width: 640px) {
+                .footer-inner {
+                    flex-direction: column;
+                    text-align: center;
+                }
+            }
+
+            /* ─── SCROLL REVEAL ─── */
             .reveal {
-                opacity: 1;
-                transform: none;
-                transition: none;
+                opacity: 0;
+                transform: translateY(24px);
+                transition:
+                    opacity var(--duration-reveal) var(--ease-out-quad),
+                    transform var(--duration-reveal) var(--ease-out-expo);
             }
-        }
+            .reveal[data-reveal="left"] {
+                transform: translateX(-24px);
+            }
+            .reveal[data-reveal="right"] {
+                transform: translateX(24px);
+            }
+            .reveal[data-reveal="fade"] {
+                transform: none;
+            }
 
-        /* ─── SKIP LINK ─── */
-        .skip-link {
-            position: absolute;
-            top: -100%;
-            left: var(--space-md);
-            padding: var(--space-sm) var(--space-md);
-            background: var(--primary);
-            color: var(--background);
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: var(--radius-md);
-            z-index: 200;
-            text-decoration: none;
-            transition: top var(--duration-normal) var(--ease-out-expo);
-        }
-        .skip-link:focus {
-            top: var(--space-md);
-        }
+            .reveal.visible {
+                opacity: 1;
+                transform: translate(0);
+            }
 
-        /* ─── GLOBAL FOCUS ─── */
-        :focus-visible {
-            outline: 2px solid var(--primary);
-            outline-offset: 3px;
-        }
-    </style>
-</head>
-<body>
-    <a href="#main-content" class="skip-link">Skip to content</a>
-    <NodeNetwork />
-    <header>
-        <nav class="navbar">
-            <a href="/" class="logo">{site.logo}<span>.</span></a>
-            <button class="mobile-toggle" aria-label="Toggle navigation" onclick="document.getElementById('nav').classList.toggle('open')">&#9776;</button>
-            <ul class="nav-links" id="nav">
-                <li><a href="/" class:list={[{ active: currentPath === '/' }]}>Home</a></li>
-                <li><a href="/work" class:list={[{ active: currentPath.startsWith('/work') }]}>Work</a></li>
-                <li><a href="/#contact" class="nav-cta">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+            /* Reduced motion: skip all reveal animations */
+            @media (prefers-reduced-motion: reduce) {
+                .reveal {
+                    opacity: 1;
+                    transform: none;
+                    transition: none;
+                }
+            }
 
-    <main id="main-content">
-        <div class="container">
-            <slot />
-        </div>
-    </main>
+            /* ─── SKIP LINK ─── */
+            .skip-link {
+                position: absolute;
+                top: -100%;
+                left: var(--space-md);
+                padding: var(--space-sm) var(--space-md);
+                background: var(--primary);
+                color: var(--background);
+                font-weight: 600;
+                font-size: 0.85rem;
+                border-radius: var(--radius-md);
+                z-index: 200;
+                text-decoration: none;
+                transition: top var(--duration-normal) var(--ease-out-expo);
+            }
+            .skip-link:focus {
+                top: var(--space-md);
+            }
 
-    <footer>
-        <div class="container">
-            <div class="footer-inner">
-                <p>&copy; {currentYear} {site.name}</p>
-                <div class="footer-links">
-                    <a href={social.linkedin} target="_blank" rel="noopener">LinkedIn</a>
-                    <a href={social.github} target="_blank" rel="noopener">GitHub</a>
-                    <a href={`mailto:${social.email}`}>Email</a>
+            /* ─── GLOBAL FOCUS ─── */
+            :focus-visible {
+                outline: 2px solid var(--primary);
+                outline-offset: 3px;
+            }
+        </style>
+    </head>
+    <body>
+        <a href="#main-content" class="skip-link">Skip to content</a>
+        <NodeNetwork />
+        <header>
+            <nav class="navbar">
+                <a href="/" class="logo">{site.logo}<span>.</span></a>
+                <button
+                    class="mobile-toggle"
+                    aria-label="Toggle navigation"
+                    onclick="document.getElementById('nav').classList.toggle('open')"
+                    >&#9776;</button
+                >
+                <ul class="nav-links" id="nav">
+                    <li>
+                        <a
+                            href="/"
+                            class:list={[{ active: currentPath === "/" }]}
+                            >Home</a>
+                    </li>
+                    <li>
+                        <a
+                            href="/work"
+                            class:list={[
+                                { active: currentPath.startsWith("/work") },
+                            ]}>Work</a>
+                    </li>
+                    <li><a href="/#contact" class="nav-cta">Contact</a></li>
+                </ul>
+            </nav>
+        </header>
+
+        <main id="main-content">
+            <div class="container">
+                <slot />
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <div class="footer-inner">
+                    <p>&copy; {currentYear} {site.name}</p>
+                    <div class="footer-links">
+                        <a
+                            href={social.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer">LinkedIn</a
+                        >
+                        <a
+                            href={social.github}
+                            target="_blank"
+                            rel="noopener noreferrer">GitHub</a
+                        >
+                        <a href={`mailto:${social.email}`}>Email</a>
+                    </div>
                 </div>
             </div>
-        </div>
-    </footer>
+        </footer>
 
-    <script>
-        let revealObserver: IntersectionObserver | null = null;
+        <script>
+            let revealObserver: IntersectionObserver | null = null;
 
-        function initReveals() {
-            const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            function initReveals() {
+                const prefersReduced = window.matchMedia(
+                    "(prefers-reduced-motion: reduce)",
+                ).matches;
 
-            revealObserver?.disconnect();
-            revealObserver = null;
+                revealObserver?.disconnect();
+                revealObserver = null;
 
-            document.querySelectorAll('.reveal').forEach((el, i) => {
-                if (prefersReduced) {
-                    el.classList.add('visible');
-                    return;
-                }
+                document.querySelectorAll(".reveal").forEach((el, i) => {
+                    if (prefersReduced) {
+                        el.classList.add("visible");
+                        return;
+                    }
 
-                // Support data-reveal-delay for explicit timing, or auto-stagger
-                const delay = el.getAttribute('data-reveal-delay');
-                if (delay) {
-                    (el as HTMLElement).style.transitionDelay = `${delay}ms`;
-                }
-            });
-
-            if (prefersReduced) return;
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                        observer.unobserve(entry.target);
+                    // Support data-reveal-delay for explicit timing, or auto-stagger
+                    const delay = el.getAttribute("data-reveal-delay");
+                    if (delay) {
+                        (el as HTMLElement).style.transitionDelay =
+                            `${delay}ms`;
                     }
                 });
-            }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
 
-            document.querySelectorAll('.reveal:not(.visible)').forEach(el => observer.observe(el));
-            revealObserver = observer;
-        }
+                if (prefersReduced) return;
 
-        function cleanupRevealObserver() {
-            revealObserver?.disconnect();
-            revealObserver = null;
-        }
+                const observer = new IntersectionObserver(
+                    (entries) => {
+                        entries.forEach((entry) => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add("visible");
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    },
+                    { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
+                );
 
-        // Run on initial load and on View Transition navigations
-        initReveals();
+                document
+                    .querySelectorAll(".reveal:not(.visible)")
+                    .forEach((el) => observer.observe(el));
+                revealObserver = observer;
+            }
 
-        if (!(window as Window & { __hasRevealPageLoadListener?: boolean }).__hasRevealPageLoadListener) {
-            document.addEventListener('astro:page-load', initReveals);
-            (window as Window & { __hasRevealPageLoadListener?: boolean }).__hasRevealPageLoadListener = true;
-        }
+            function cleanupRevealObserver() {
+                revealObserver?.disconnect();
+                revealObserver = null;
+            }
 
-        if (!(window as Window & { __hasRevealBeforeSwapListener?: boolean }).__hasRevealBeforeSwapListener) {
-            document.addEventListener('astro:before-swap', cleanupRevealObserver);
-            (window as Window & { __hasRevealBeforeSwapListener?: boolean }).__hasRevealBeforeSwapListener = true;
-        }
-    </script>
-</body>
+            // Run on initial load and on View Transition navigations
+            initReveals();
+
+            if (
+                !(window as Window & { __hasRevealPageLoadListener?: boolean })
+                    .__hasRevealPageLoadListener
+            ) {
+                document.addEventListener("astro:page-load", initReveals);
+                (
+                    window as Window & { __hasRevealPageLoadListener?: boolean }
+                ).__hasRevealPageLoadListener = true;
+            }
+
+            if (
+                !(
+                    window as Window & {
+                        __hasRevealBeforeSwapListener?: boolean;
+                    }
+                ).__hasRevealBeforeSwapListener
+            ) {
+                document.addEventListener(
+                    "astro:before-swap",
+                    cleanupRevealObserver,
+                );
+                (
+                    window as Window & {
+                        __hasRevealBeforeSwapListener?: boolean;
+                    }
+                ).__hasRevealBeforeSwapListener = true;
+            }
+        </script>
+    </body>
 </html>

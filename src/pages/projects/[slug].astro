@@ -1,15 +1,16 @@
 ---
-import Layout from '../../components/Layout.astro';
-import EmbedFrame from '../../components/content/EmbedFrame.astro';
-import ScreenshotFigure from '../../components/content/ScreenshotFigure.astro';
-import ScreenshotGallery from '../../components/content/ScreenshotGallery.astro';
-import { getCollection } from 'astro:content';
-import { site } from '../../config';
+import Layout from "../../components/Layout.astro";
+import EmbedFrame from "../../components/content/EmbedFrame.astro";
+import ScreenshotFigure from "../../components/content/ScreenshotFigure.astro";
+import ScreenshotGallery from "../../components/content/ScreenshotGallery.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../config";
+import { formatDate } from "../../utils/date";
 
 export async function getStaticPaths() {
-  const projects = await getCollection('projects');
+  const projects = await getCollection("projects");
   return projects
-    .filter((project) => project.data.status === 'published')
+    .filter((project) => project.data.status === "published")
     .map((project) => ({
       params: { slug: project.slug },
       props: { project },
@@ -19,16 +20,16 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await project.render();
 
-const formatDate = (date?: Date) =>
-  date ? new Intl.DateTimeFormat(project.data.locale, { dateStyle: 'medium' }).format(date) : null;
-
-const publishedLabel = formatDate(project.data.publishedAt);
-const updatedLabel = formatDate(project.data.updatedAt);
+const publishedLabel = formatDate(
+  project.data.publishedAt,
+  project.data.locale,
+);
+const updatedLabel = formatDate(project.data.updatedAt, project.data.locale);
 
 const articleJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'CreativeWork',
-  '@id': project.data.id ?? project.slug,
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "@id": project.data.id ?? project.slug,
   headline: project.data.title,
   description: project.data.summary ?? project.data.subtitle,
   datePublished: project.data.publishedAt?.toISOString(),
@@ -37,13 +38,16 @@ const articleJsonLd = {
   keywords: project.data.keywords ?? project.data.tags,
   url: `${site.url}/projects/${project.slug}`,
   author: {
-    '@type': 'Person',
+    "@type": "Person",
     name: site.name,
   },
 };
 ---
 
-<Layout title={`${project.data.title} - ${site.name}`} description={project.data.summary ?? project.data.subtitle}>
+<Layout
+  title={`${project.data.title} - ${site.name}`}
+  description={project.data.summary ?? project.data.subtitle}
+>
   <article class="project-page">
     <div class="back-row">
       <a href="/projects" class="back-link">&larr; Back to Projects</a>
@@ -60,9 +64,7 @@ const articleJsonLd = {
       <p class="subtitle">{project.data.summary ?? project.data.subtitle}</p>
 
       <div class="tags">
-        {project.data.tags.map((tag) => (
-          <span class="tag">{tag}</span>
-        ))}
+        {project.data.tags.map((tag) => <span class="tag">{tag}</span>)}
       </div>
     </header>
 
@@ -75,46 +77,81 @@ const articleJsonLd = {
         <span class="label">Timeline</span>
         <span class="value">{project.data.timeline}</span>
       </div>
-      {publishedLabel && (
-        <div class="stat">
-          <span class="label">Published</span>
-          <span class="value">{publishedLabel}</span>
-        </div>
-      )}
-      {updatedLabel && (
-        <div class="stat">
-          <span class="label">Updated</span>
-          <span class="value">{updatedLabel}</span>
-        </div>
-      )}
+      {
+        publishedLabel && (
+          <div class="stat">
+            <span class="label">Published</span>
+            <span class="value">{publishedLabel}</span>
+          </div>
+        )
+      }
+      {
+        updatedLabel && (
+          <div class="stat">
+            <span class="label">Updated</span>
+            <span class="value">{updatedLabel}</span>
+          </div>
+        )
+      }
       <div class="stat">
         <span class="label">Status</span>
         <span class="value">{project.data.status}</span>
       </div>
     </div>
 
-    {project.data.links && (
-      <div class="link-row reveal">
-        {project.data.links.demo && <a href={project.data.links.demo} target="_blank" rel="noopener">Live demo</a>}
-        {project.data.links.repository && <a href={project.data.links.repository} target="_blank" rel="noopener">Repository</a>}
-        {project.data.links.documentation && (
-          <a href={project.data.links.documentation} target="_blank" rel="noopener">Documentation</a>
-        )}
-      </div>
-    )}
+    {
+      project.data.links && (
+        <div class="link-row reveal">
+          {project.data.links.demo && (
+            <a
+              href={project.data.links.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Live demo
+            </a>
+          )}
+          {project.data.links.repository && (
+            <a
+              href={project.data.links.repository}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Repository
+            </a>
+          )}
+          {project.data.links.documentation && (
+            <a
+              href={project.data.links.documentation}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Documentation
+            </a>
+          )}
+        </div>
+      )
+    }
 
-    {project.data.screenshots && project.data.screenshots.length > 0 && (
-      <div class="reveal">
-        <h2 class="section-title">Screenshots</h2>
-        <ScreenshotGallery items={project.data.screenshots} />
-      </div>
-    )}
+    {
+      project.data.screenshots && project.data.screenshots.length > 0 && (
+        <div class="reveal">
+          <h2 class="section-title">Screenshots</h2>
+          <ScreenshotGallery items={project.data.screenshots} />
+        </div>
+      )
+    }
 
     <div class="content reveal">
-      <Content components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }} />
+      <Content
+        components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }}
+      />
     </div>
 
-    <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)} />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(articleJsonLd)}
+    />
   </article>
 </Layout>
 
@@ -148,7 +185,7 @@ const articleJsonLd = {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -207,7 +244,7 @@ const articleJsonLd = {
   }
 
   .label {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -234,7 +271,9 @@ const articleJsonLd = {
     color: var(--text);
     text-decoration: none;
     font-size: 0.83rem;
-    transition: border-color var(--duration-normal) ease, color var(--duration-normal) ease;
+    transition:
+      border-color var(--duration-normal) ease,
+      color var(--duration-normal) ease;
   }
 
   .link-row a:hover {
@@ -243,7 +282,7 @@ const articleJsonLd = {
   }
 
   .section-title {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-size: 0.75rem;
@@ -283,7 +322,7 @@ const articleJsonLd = {
   }
 
   .content :global(code) {
-    font-family: 'IBM Plex Mono', monospace;
+    font-family: "IBM Plex Mono", monospace;
     font-size: 0.83rem;
     padding: 0.15rem 0.45rem;
     border-radius: 4px;

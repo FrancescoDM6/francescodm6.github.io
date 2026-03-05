@@ -18,6 +18,7 @@ const CONTENT_SOURCES = [
     emptyOutcomesFallback:
       'Outcomes will be published after the engagement wraps and details can be shared.',
     itemLabel: 'Case study',
+    fieldMap: { role: 'role', company: 'company', timeline: 'timeline' },
   },
   {
     id: 'projects',
@@ -28,6 +29,7 @@ const CONTENT_SOURCES = [
     emptyOutcomesFallback:
       'Implementation notes are provided in the project writeup.',
     itemLabel: 'Project',
+    fieldMap: { role: 'category', company: 'projectType', timeline: 'timeline' },
   },
   {
     id: 'blog',
@@ -38,6 +40,7 @@ const CONTENT_SOURCES = [
     emptyOutcomesFallback:
       'This entry is a narrative note rather than an outcome list.',
     itemLabel: 'Blog post',
+    fieldMap: { role: 'category', company: 'category', timeline: 'readTime' },
   },
 ];
 
@@ -98,9 +101,10 @@ function parseMarkdownEntry(filePath, source) {
       ? data.outcomes
       : [source.emptyOutcomesFallback];
 
-  const role = data.role || data.category || 'Not specified';
-  const company = data.company || data.projectType || 'Not specified';
-  const timeline = data.timeline || data.readTime || 'Not specified';
+  const { role: roleField, company: companyField, timeline: timelineField } = source.fieldMap ?? {};
+  const role = (roleField && data[roleField]) || 'Not specified';
+  const company = (companyField && data[companyField]) || 'Not specified';
+  const timeline = (timelineField && data[timelineField]) || 'Not specified';
 
   const sourcePath = `${source.routePrefix}${slug}`;
 

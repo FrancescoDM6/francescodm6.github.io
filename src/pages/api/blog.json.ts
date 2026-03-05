@@ -1,22 +1,8 @@
 import type { APIRoute } from 'astro';
 import { getCollection } from 'astro:content';
+import { toSummary } from '../../utils/summary';
 
 const RESPONSE_VERSION = '1.0';
-
-const toSummary = (subtitle: string | undefined, body: string): string => {
-  if (subtitle && subtitle.trim().length > 0) {
-    return subtitle.trim();
-  }
-
-  return body
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/[>#*_~-]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, 160);
-};
 
 export const GET: APIRoute = async () => {
   const posts = await getCollection('blog');

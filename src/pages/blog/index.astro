@@ -1,12 +1,13 @@
 ---
-import Layout from '../../components/Layout.astro';
-import BlogPostCard from '../../components/BlogPostCard.astro';
-import { getCollection } from 'astro:content';
-import { site } from '../../config';
+import Layout from "../../components/Layout.astro";
+import BlogPostCard from "../../components/BlogPostCard.astro";
+import { getCollection } from "astro:content";
+import { site } from "../../config";
+import { formatDate } from "../../utils/date";
 
-const posts = await getCollection('blog');
+const posts = await getCollection("blog");
 const sorted = posts
-  .filter((post) => post.data.status === 'published')
+  .filter((post) => post.data.status === "published")
   .sort((a, b) => {
     const aTs = a.data.publishedAt?.getTime() ?? 0;
     const bTs = b.data.publishedAt?.getTime() ?? 0;
@@ -14,17 +15,14 @@ const sorted = posts
     return a.data.order - b.data.order;
   });
 
-const formatDate = (value?: Date, locale = 'en-US') =>
-  value ? new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(value) : undefined;
-
 const listJsonLd = {
-  '@context': 'https://schema.org',
-  '@type': 'Blog',
+  "@context": "https://schema.org",
+  "@type": "Blog",
   name: `${site.name} Blog`,
   url: `${site.url}/blog`,
   blogPost: sorted.map((post) => ({
-    '@type': 'BlogPosting',
-    '@id': post.data.id ?? post.slug,
+    "@type": "BlogPosting",
+    "@id": post.data.id ?? post.slug,
     headline: post.data.title,
     datePublished: post.data.publishedAt?.toISOString(),
     dateModified: post.data.updatedAt?.toISOString(),
@@ -36,7 +34,10 @@ const listJsonLd = {
 };
 ---
 
-<Layout title={`Blog - ${site.name}`} description="Writing about product operations, AI implementation, and system design.">
+<Layout
+  title={`Blog - ${site.name}`}
+  description="Writing about product operations, AI implementation, and system design."
+>
   <section class="page">
     <header class="page-header">
       <h1>Blog</h1>
@@ -44,18 +45,20 @@ const listJsonLd = {
     </header>
 
     <div class="post-grid">
-      {sorted.map((post) => (
-        <BlogPostCard
-          title={post.data.title}
-          subtitle={post.data.subtitle}
-          summary={post.data.summary ?? post.data.excerpt}
-          category={post.data.category}
-          readTime={post.data.readTime}
-          publishedLabel={formatDate(post.data.publishedAt, post.data.locale)}
-          tags={post.data.tags}
-          slug={post.slug}
-        />
-      ))}
+      {
+        sorted.map((post) => (
+          <BlogPostCard
+            title={post.data.title}
+            subtitle={post.data.subtitle}
+            summary={post.data.summary ?? post.data.excerpt}
+            category={post.data.category}
+            readTime={post.data.readTime}
+            publishedLabel={formatDate(post.data.publishedAt, post.data.locale)}
+            tags={post.data.tags}
+            slug={post.slug}
+          />
+        ))
+      }
     </div>
 
     <script type="application/ld+json" set:html={JSON.stringify(listJsonLd)} />
