@@ -1,0 +1,128 @@
+---
+id: "bi-dashboard"
+slug: "bi-dashboard"
+title: "Steam Indie Market Intelligence"
+subtitle: "A full-stack BI project mapping 32,000+ indie games to find where player demand exceeds supply — and where it doesn't."
+summary: "Built an end-to-end analytics pipeline (Python → PostgreSQL → Tableau) to identify underserved niches in Steam's indie game market using retention, saturation, and ownership data across 32,707 games from 2022–2026."
+company: "Personal Project"
+role: "BI Analyst / Data Engineer"
+timeline: "2025–2026"
+status: "published"
+locale: "en-US"
+publishedAt: "2026-03-31"
+updatedAt: "2026-03-31"
+tags: ["Business Intelligence", "Data Engineering", "Market Analysis", "SQL", "Python", "Tableau"]
+keywords: ["steam analytics", "indie game market", "retention analysis", "market saturation", "data pipeline", "tableau dashboard", "postgresql", "steamspy"]
+outcomes:
+  - "Ingested and cleaned 32,707 indie game records across 4 data sources via rate-limited Python scrapers"
+  - "Built a two-schema PostgreSQL analytical layer computing retention, saturation, and opportunity scores across 10,000+ tag pair combinations"
+  - "Identified structural pattern: idle, sports sim, and card game mechanics consistently deliver 3–5x the median retention rate despite low market supply"
+  - "Validated model against known market outcomes — Vampire Survivors (50.7% retention, 7.5M owners) and Lethal Company (strong retention, top 0.1% ownership) score as predicted"
+order: 2
+---
+
+import TableauEmbed from '../../components/content/TableauEmbed.astro';
+
+## The question
+
+Steam adds roughly 30 new indie games every day. Most of them disappear. The conventional explanation is discoverability — too many games, not enough eyeballs. But discoverability is downstream of a more fundamental problem: most games are built in genres where players don't stay.
+
+This project asked a different question: **where is player demand outpacing supply, and which of those gaps actually retain players once they arrive?**
+
+The answer matters because supply and retention are independently useful but tell different stories. A genre with low supply might be empty for a reason — nobody wants to play those games. A genre with strong retention but high supply is viable but crowded. The opportunity sits at the intersection: low competition, durable player behavior.
+
+## What the data found
+
+### The noise floor is brutal
+
+32,707 indie games were released on Steam between January 2022 and early 2026. Of those, only 3,880 — **11.8%** — generated enough concurrent player activity to compute a retention metric at all. The other 88% never crossed the visibility threshold.
+
+Of the games that did generate data, the median 90-day retention was **7.1%**. Half of all measurable indie releases lose 93 out of every 100 players within three months of launch. Average retention was 9.8%, pulled up by outliers.
+
+This isn't a marketing problem. These games had players. The players left.
+
+### Genre choice predicts retention more than quality does
+
+Review score and retention are only loosely correlated across the dataset. Games rated "Overwhelmingly Positive" average 11.1% retention — better than the 9.1% for "Positive" games, but not dramatically. What drives a larger spread is genre.
+
+The highest-retention primary tags (among genres with 50+ games) cluster around a specific mechanical pattern:
+
+- **Card Game:** 24.2% average retention
+- **Match 3:** 22.2%
+- **Auto Battler:** 23.1%
+- **Idler:** 18.8%
+- **Sports:** 19.8%
+- **Solitaire:** 22.1%
+
+The lowest-retention genres tell the opposite story:
+
+- **Story Rich:** 6.9% — players finish the narrative and leave
+- **Action-Adventure:** 6.0%
+- **Spectacle Fighter:** 1.2%
+- **Boomer Shooter:** 4.1%
+
+The pattern is structural. Games with infinite replayability loops — where there's always another run, another season, another card pull, another optimization to chase — retain players. Games built around a contained experience (a story to complete, a campaign to finish) lose players when the content ends. Both are valid designs. They just produce very different retention curves.
+
+### The known hits validate the model
+
+Two games serve as natural validation cases.
+
+**Vampire Survivors** — 50.7% retention, 7.5M owners, $4.99. An action roguelike/bullet hell released in late 2021 (with continued updates through our window) that occupies a then-undersupplied niche and runs entirely on loop mechanics. No narrative to exhaust, no campaign to finish. The model would predict strong retention. The data confirms it.
+
+**Lethal Company** — Strong retention tier, top 0.1% ownership. A co-op horror game with procedural maps and quota-driven progression — mechanics that create reasons to return repeatedly. Same structural pattern.
+
+**Baldur's Gate 3** — Poor retention tier despite Overwhelmingly Positive reviews and top 0.1% ownership. A deep narrative RPG: players invested hundreds of hours, completed their playthrough, and moved on. Exactly what the model predicts for story-driven content. Poor retention doesn't mean the game failed — it means it was built for depth, not recurrence.
+
+**Palworld** — Poor retention despite viral launch. Massive spike, rapid falloff. The data reflects what observers noted at the time: early access novelty without a sustained engagement loop.
+
+### Where the opportunity is
+
+The opportunity scoring model ranks tag combinations by the product of low supply and high retention — niches where player demand (measured by retention) exceeds developer supply. Among combinations with five or more games:
+
+- **Dark + Memes:** 66.1% average retention across 5 games. Extremely low supply.
+- **Immersive Sim + Programming:** 47.0% retention, 38k avg owners, 5 games. Niche but sticky.
+- **Automobile Sim + FPS:** 41.5% retention, 78k avg owners, 5 games.
+- **Creature Collector + Utilities:** 34.1% retention, 88k avg owners, 5 games.
+- **Sports + Utilities:** 36.6% retention, 96% average review score, 5 games.
+
+The low game counts (minimum threshold was 5) are a feature of the model, not a flaw — they indicate undersupply. The high retention rates indicate existing players in these niches are staying. The combination is the signal.
+
+The full opportunity quadrant contains **1,918 tag combinations** with above-median retention and below-median supply. The saturated quadrant — high supply, low retention — contains **2,451 combinations**. More niches are saturated than are opportunities, which is consistent with a market where genre selection follows success signals with a multi-year lag.
+
+<TableauEmbed
+  vizId="viz1774989138675"
+  name="SteamIndieInsights/Dashboard1"
+  staticImage="https://public.tableau.com/static/images/St/SteamIndieInsights/Dashboard1/1.png"
+  caption="Interactive dashboard — use the tabs to explore the Market Map, Game Profiles, Tag Saturation, Price vs. Retention, Vitality Chart, and Tag Growth Heatmap views."
+  height={900}
+/>
+
+## How it was built
+
+The pipeline runs across four stages.
+
+**Ingestion** — Three Python scrapers pull from Steam Store API (game metadata, pricing, genres), SteamSpy (ownership estimates, review counts, concurrent users), and Steam Charts (monthly historical player counts). Each scraper is rate-limited and checkpointed so runs can resume after interruption. A fourth script loads all cleaned CSVs into PostgreSQL.
+
+**Raw schema** — Source data lands in a `raw` schema with minimal transformation: `steam_apps`, `steamspy_data`, `steam_tags`, and `player_counts` tables. This separation preserves the ability to rerun transformations without re-ingesting.
+
+**Analytics schema** — Six SQL transformation scripts build the analytical layer: `indie_games` (base filtered table with all computed metrics), `tag_pairs` (co-occurrence matrix), `tag_saturation` (per-tag supply and growth metrics), retention cohort analysis, opportunity scoring, and game profiles.
+
+The core retention metric is `avg_players_month_3 / alltime_peak_players`. The opportunity score is `(1 - supply_percentile) × retention_percentile`, yielding a 0–100 composite where 100 means maximum underserved demand.
+
+**Tableau** — Six views connect to the analytics schema exports: a Market Map scatter (the primary view), Game Profiles table, Tag Saturation bar chart, Tag Growth Heatmap, Price vs. Retention bubble chart, and Vitality Chart. The Market Map uses a dynamic Top N parameter controlling a set highlight — the full market stays visible in gray while the top-scoring opportunities light up in green.
+
+## What the data can't tell you
+
+Three limitations are worth being explicit about.
+
+**Retention is a proxy, not a measurement.** Monthly Steam Charts data gives average and peak concurrent users per month — not individual player sessions, not playtime, not return visit rates. The 90-day retention ratio is a reasonable industry approximation, but it conflates games with large casual audiences (low CCU, high owners) with games that genuinely hold a core playerbase.
+
+**Small-niche sample sizes require caution.** The opportunity niches with 5–10 games are promising signals, not investment theses. Before committing to a niche, a developer would want to verify the constituent games' actual commercial performance — several have ownership estimates at the SteamSpy floor of 10,000 (meaning anywhere from 0 to 20,000 actual owners).
+
+**The indie definition excludes some titles.** Games are filtered to exclude major publisher titles, free-to-play releases, and pre-2022 launch dates. This means Vampire Survivors, Lethal Company, and Balatro required targeted backfill to appear — they were missed by the original SteamSpy ingestion pass due to API intermittency. The final dataset includes them, but any future replication should account for this.
+
+## Technical stack
+
+Python (requests, pandas, tqdm, psycopg2) · PostgreSQL 18 · Tableau Public · Steam Store API · SteamSpy API · Steam Charts (scraped)
+
+The full pipeline — ingestion scripts, SQL transformation layer, and backfill utilities — is available on [GitHub](https://github.com/francescodm6/steam-bi-dashboard).
