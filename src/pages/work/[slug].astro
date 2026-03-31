@@ -3,6 +3,7 @@ import Layout from "../../components/Layout.astro";
 import { getCollection } from "astro:content";
 import { site } from "../../config";
 import EmbedFrame from "../../components/content/EmbedFrame.astro";
+import TableauEmbed from "../../components/content/TableauEmbed.astro";
 import ScreenshotFigure from "../../components/content/ScreenshotFigure.astro";
 import ScreenshotGallery from "../../components/content/ScreenshotGallery.astro";
 import { formatDate } from "../../utils/date";
@@ -136,7 +137,12 @@ const updatedLabel = formatDate(study.data.updatedAt, study.data.locale);
         <!-- Main content -->
         <div class="study-content reveal">
             <Content
-                components={{ EmbedFrame, ScreenshotFigure, ScreenshotGallery }}
+                components={{
+                    EmbedFrame,
+                    TableauEmbed,
+                    ScreenshotFigure,
+                    ScreenshotGallery,
+                }}
             />
         </div>
 
